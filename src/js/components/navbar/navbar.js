@@ -1,22 +1,47 @@
-const navbar = document.getElementById('navbar');
-navbar.innerHTML = `<nav class="bem-navbar">
-        <a href="#" class="bem-navbar__brand">Brand</a>
-        <input type="checkbox" id="nav-toggle" class="bem-navbar__checkbox">
-        <label for="nav-toggle" class="bem-navbar__toggle">☰</label>
-        <ul class="bem-navbar__menu">
-            <li class="bem-navbar__item">
-                <a href="#inicio" class="bem-navbar__link bem-navbar__link--active">Inicio</a>
-            </li>
-            <li class="bem-navbar__item">
-                <a href="#sobre" class="bem-navbar__link">Sobre</a>
-            </li>
-             <li class="bem-navbar__item">
-                <a href="#contato" class="bem-navbar__link">Contato</a>
-            </li>
-             <li class="bem-navbar__item">
-                <a href="#servico" class="bem-navbar__link">Servico</a>
-            </li>
-        </ul>
-    </nav>`
+// js/components/navbar/navbar.js
+import { rotas } from '../../rotas.js';
 
-export default navbar;
+const createNavbar = () => {
+    const navbarContainer = document.getElementById('navbar');
+
+    const nav = document.createElement('nav');
+    nav.className = 'navbar';
+
+    // Cria a logo
+    const brand = document.createElement('a');
+    brand.href = '#dashboard';
+    brand.className = 'navbar-brand';
+    brand.innerHTML = 'Task<span>Flow</span>';
+    nav.appendChild(brand);
+
+    // Cria o menu de navegação
+    const menu = document.createElement('ul');
+    menu.className = 'navbar-menu';
+
+    Object.values(rotas).forEach(rota => {
+        const menuItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = rota.url;
+        link.textContent = rota.label;
+        link.className = 'navbar-link';
+        menuItem.appendChild(link);
+        menu.appendChild(menuItem);
+    });
+
+    nav.appendChild(menu);
+    navbarContainer.appendChild(nav);
+
+    // Função para atualizar o link ativo
+    const updateActiveLink = () => {
+        const currentHash = window.location.hash || '#dashboard';
+        document.querySelectorAll('.navbar-link').forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === currentHash);
+        });
+    };
+
+    // Adiciona listeners para atualizar o link ativo
+    window.addEventListener('hashchange', updateActiveLink);
+    window.addEventListener('load', updateActiveLink);
+};
+
+export { createNavbar };

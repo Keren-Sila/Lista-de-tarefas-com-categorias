@@ -1,0 +1,172 @@
+/* css/tarefas.css */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.tarefas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.task-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    /* Checkbox | Conteúdo | Ações */
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: grab;
+    /* Indica que pode ser arrastado */
+}
+
+.task-card:active {
+    cursor: grabbing;
+    transform: scale(1.02);
+    background-color: var(--surface-2);
+}
+
+.task-card:hover {
+    background-color: var(--surface);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Checkbox Customizado --- */
+.task-checkbox-wrapper {
+    position: relative;
+}
+
+.task-checkbox {
+    opacity: 0;
+    /* Esconde o checkbox real */
+    position: absolute;
+}
+
+.task-checkbox-label {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.task-checkbox-label .check-icon {
+    fill: var(--text);
+    width: 16px;
+    height: 16px;
+    transform: scale(0);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.task-checkbox-label:hover {
+    border-color: var(--primary);
+}
+
+/* Estado "checado" */
+.task-checkbox:checked+.task-checkbox-label {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+
+.task-checkbox:checked+.task-checkbox-label .check-icon {
+    transform: scale(1) rotate(0deg);
+}
+
+/* --- Conteúdo da Tarefa --- */
+.task-content .task-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+    margin: 0;
+    transition: all 0.3s ease;
+}
+
+.task-content .task-meta {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+/* --- Ações e Prioridade --- */
+.task-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.task-priority {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* Variações de cor para prioridade */
+.task-card[data-priority="alta"] .task-priority {
+    background-color: rgba(255, 107, 107, 0.15);
+    color: var(--danger);
+}
+
+.task-card[data-priority="média"] .task-priority {
+    background-color: rgba(251, 191, 36, 0.15);
+    color: var(--warning);
+}
+
+.task-card[data-priority="baixa"] .task-priority {
+    background-color: rgba(45, 212, 167, 0.15);
+    color: var(--success);
+}
+
+.task-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.icon-button .icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.icon-button:hover {
+    background-color: var(--surface-2);
+}
+
+.icon-button:hover .icon {
+    color: var(--text);
+}
+
+/* --- Estado Concluído --- */
+.task-card.completed {
+    opacity: 0.6;
+}
+
+.task-card.completed .task-title {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}

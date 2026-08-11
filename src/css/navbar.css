@@ -1,0 +1,62 @@
+/* css/navbar.css */
+
+.navbar {
+    background-color: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+}
+
+.navbar-brand span {
+    color: var(--primary);
+}
+
+.navbar-menu {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+}
+
+.navbar-link {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.navbar-link:hover {
+    color: var(--text);
+}
+
+.navbar-link.active {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.navbar-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    /* Alinha com a borda da navbar */
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary);
+}

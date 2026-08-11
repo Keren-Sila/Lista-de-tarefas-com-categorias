@@ -1,34 +1,14 @@
-import navbar from "./components/navbar/navbar.js";
-import home from "./components/paginas/home.js"
-import sobre from "./components/paginas/sobre.js"
-import contato from "./components/paginas/contato.js";
-import servico from "./components/paginas/servico.js";
+import { iniciarRoteador } from './rotas.js';
+import { createNavbar } from './components/navbar/navbar.js';
 
-const app = document.getElementById('app');
-// app.textContent = '<h1>Olá Mundo!</h1>';
+// Ponto de entrada da aplicação
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('TaskFlow iniciado!');
 
-let rota = window.location.hash || '#inicio';
-render()
-window.addEventListener("hashchange" , ()=>{
-rota = window.location.hash;
-render()
+    // Renderiza a barra de navegação
+    createNavbar();
 
-})
-function render(){
-switch(rota){
-    case '#inicio':
-        app.innerHTML = home
-    break;
-    case '#sobre':
-        app.innerHTML = sobre
-    break;
-    case '#contato':
-        app.innerHTML = contato
-    break;
-    case '#servico':
-        app.innerHTML = servico
-    break;
-    default:
-        app.innerHTML = `<h1> Pagina não encontrada </h1>` ;
-}
-}
+    // Inicia o roteador que controla a exibição das páginas
+    iniciarRoteador();
+    // Outras inicializações (ex: carregar navbar, verificar sessão) podem vir aqui
+});
