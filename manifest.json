@@ -1,0 +1,58 @@
+{
+    "name": "TaskFlow — Smart Weekly Planner",
+    "short_name": "TaskFlow",
+    "description": "Planejador semanal inteligente com tarefas, categorias, calendário e sincronização.",
+    "start_url": "/index.html",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#0F1117",
+    "theme_color": "#7C6FF7",
+    "categories": [
+        "productivity"
+    ],
+    "lang": "pt-BR",
+    "icons": [
+        {
+            "src": "/src/img/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/src/img/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/src/img/icons/maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/src/img/screenshots/dashboard.png",
+            "sizes": "1280x720",
+            "type": "image/png"
+        },
+        {
+            "src": "/src/img/screenshots/tarefas.png",
+            "sizes": "1280x720",
+            "type": "image/png"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Nova Tarefa",
+            "short_name": "Nova",
+            "url": "/index.html#tarefas"
+        },
+        {
+            "name": "Dashboard",
+            "short_name": "Dashboard",
+            "url": "/index.html#dashboard"
+        }
+    ],
+    "prefer_related_applications": false
+}

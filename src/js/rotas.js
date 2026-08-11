@@ -2,7 +2,7 @@
 import dashboard from './components/paginas/dashboard.js';
 import tarefas from './components/paginas/tarefas.js';
 import categorias from './components/paginas/categorias.js';
-// import calendario from '../paginas/calendario.js';
+import calendario from './components/paginas/calendario.js';
 // import configuracoes from '../paginas/configuracoes.js';
 
 // Mapeia as URLs (hash) para os módulos das páginas
@@ -10,7 +10,7 @@ export const rotas = {
     '#dashboard': dashboard,
     '#tarefas': tarefas,
     '#categorias': categorias,
-    // '#calendario': calendario,
+    '#calendario': calendario,
     // '#configuracoes': configuracoes,
 };
 

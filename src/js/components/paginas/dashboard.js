@@ -1,111 +1,168 @@
-// js/components/paginas/dashboard.js
-import { tarefasStorage } from '../../tarefasStorage.js';
+import {
+    carregarTarefas,
+    calcularEstatisticas
+} from "../../tarefasStorage.js";
 
-// Calcula as estatísticas do dashboard a partir dos dados reais do storage.
-const getDashboardData = () => {
-    const tarefas = tarefasStorage.getTarefas();
-    const totalTarefas = tarefas.length;
-    const tarefasConcluidas = tarefas.filter(t => t.completed).length;
-    const tarefasPendentes = tarefas.filter(t => !t.completed);
+function saudacao() {
+    const hora = new Date().getHours();
 
-    // Simples heurística para tarefas de hoje e reuniões
-    const tarefasHoje = tarefas.filter(t => t.time && t.time.toLowerCase().includes('hoje')).length;
-    const totalReunioes = tarefas.filter(t => t.category.toLowerCase() === 'reunião').length;
+    if (hora < 12) return "Bom dia";
+    if (hora < 18) return "Boa tarde";
+    return "Boa noite";
+}
 
-    return {
-        userName: 'Keren',
-        weekTasks: totalTarefas,
-        todayMeetings: totalReunioes, // Simplificado por enquanto
-        highPriorityTasks: tarefas.filter(t => t.priority === 'Alta' && !t.completed).length,
-        stats: {
-            today: tarefasHoje.toString().padStart(2, '0'),
-            completed: tarefasConcluidas.toString().padStart(2, '0'),
-            meetings: totalReunioes.toString().padStart(2, '0'),
-            productivity: totalTarefas > 0 ? `${Math.round((tarefasConcluidas / totalTarefas) * 100)}%` : '0%'
-        },
-        nextTask: tarefasPendentes.length > 0 ? tarefasPendentes[0] : null,
-        nextMeetings: [
-            { platform: 'Microsoft Teams', time: '10:00', title: 'Projeto Integrador' },
-            { platform: 'Google Meet', time: '15:30', title: 'Mentoria' }
-        ] // Mantido estático por enquanto
-    };
-};
+function obterProximaTarefa(tarefas) {
+    const pendentes = tarefas.filter(t => !t.concluida);
 
-const createDashboardPage = () => {
-    const data = getDashboardData();
+    if (pendentes.length === 0) {
+        return null;
+    }
 
-    const pageContent = document.createElement('div');
-    pageContent.className = 'dashboard-container';
+    return pendentes[0];
+}
 
-    // 1. Hero Principal
-    const heroSection = `
-        <section class="hero">
-            <h1>Boa tarde, ${data.userName} 👋</h1>
-            <p class="subtitle">Você possui <strong>${data.weekTasks} tarefas</strong> esta semana, <strong>${data.todayMeetings} reuniões hoje</strong> e <strong>${data.highPriorityTasks} tarefas de alta prioridade</strong>.</p>
-        </section>
-    `;
+function cardEstatistica(titulo, valor, classe) {
+    return `
+    <div class="stat-card ${classe}">
+      <span class="stat-title">${titulo}</span>
+      <h2 class="stat-value" data-value="${valor}">0</h2>
+    </div>
+  `;
+}
 
-    // 2. Cards de Estatísticas
-    const statsCards = `
-        <section class="dashboard-grid">
-            <div class="stat-card">
-                <h2>Tarefas Hoje</h2>
-                <p>${data.stats.today}</p>
-            </div>
-            <div class="stat-card">
-                <h2>Concluídas</h2>
-                <p>${data.stats.completed}</p>
-            </div>
-            <div class="stat-card">
-                <h2>Reuniões</h2>
-                <p>${data.stats.meetings}</p>
-            </div>
-            <div class="stat-card">
-                <h2>Produtividade</h2>
-                <p>${data.stats.productivity}</p>
-            </div>
-        </section>
-    `;
+function dashboard() {
 
-    // 3. Próxima Tarefa e Reuniões
-    const nextUpSection = `
-        <section class="next-up-grid">
-            ${data.nextTask ? `
-                <div class="next-task-card glass">
-                    <h3>Próxima tarefa</h3>
-                    <div class="task-details">
-                        <span class="task-title">${data.nextTask.title}</span>
-                        <div class="task-meta">
-                            <span>${data.nextTask.category}</span>
-                            <span>${data.nextTask.time}</span>
-                            <span class="priority high">${data.nextTask.priority}</span>
-                        </div>
-                    </div>
+    const tarefas = carregarTarefas();
+    const stats = calcularEstatisticas(tarefas);
+    const proxima = obterProximaTarefa(tarefas);
+
+    const page = document.createElement('div');
+
+    page.innerHTML = `
+    <section class="dashboard">
+
+      <div class="dashboard-hero glass fade-up">
+        <h1>${saudacao()}, Keren 👋</h1>
+        <p>Organize sua semana e mantenha tudo sob controle.</p>
+      </div>
+
+      <div class="dashboard-grid fade-up">
+
+        ${cardEstatistica("Tarefas Hoje", stats.hoje, "primary")}
+
+        ${cardEstatistica("Concluídas", stats.concluidas, "success")}
+
+        ${cardEstatistica("Reuniões", 3, "accent")}
+
+        ${cardEstatistica("Produtividade", `${stats.progresso}%`, "warning")}
+
+      </div>
+
+      <div class="dashboard-panels fade-up">
+
+        <div class="card dashboard-panel">
+          <h3>📌 Próxima tarefa</h3>
+
+          ${proxima
+            ? `
+                <div class="next-task">
+                  <strong>${proxima.titulo}</strong>
+                  <p>${proxima.categoria}</p>
+                  <span>${proxima.data || "Hoje"} • ${proxima.horario || "14:00"}</span>
                 </div>
-            ` : `
-                <div class="next-task-card glass"><h3 class="all-done">🎉 Todas as tarefas concluídas!</h3></div>
-            `}
-            <div class="next-meetings-card glass">
-                <h3>Próximas reuniões</h3>
-                ${data.nextMeetings.map(meeting => `
-                    <div class="meeting-item">
-                        <div class="meeting-info">
-                            <span class="meeting-platform">${meeting.platform}</span>
-                            <span class="meeting-title">${meeting.title}</span>
-                        </div>
-                        <span class="meeting-time">${meeting.time}</span>
-                    </div>
-                `).join('')}
-            </div>
-        </section>
-    `;
+              `
+            : `
+                <p>Nenhuma tarefa pendente.</p>
+              `
+        }
 
-    pageContent.innerHTML = heroSection + statsCards + nextUpSection;
-    return pageContent;
-};
+        </div>
+
+        <div class="card dashboard-panel">
+          <h3>📅 Próximas reuniões</h3>
+
+          <ul class="meeting-list">
+            <li>
+              <span class="badge teams">Teams</span>
+              Projeto Integrador — 10:00
+            </li>
+
+            <li>
+              <span class="badge google">Google</span>
+              Mentoria — 15:30
+            </li>
+
+            <li>
+              <span class="badge outlook">Outlook</span>
+              Planejamento — 17:00
+            </li>
+          </ul>
+
+        </div>
+
+      </div>
+
+      <div class="card quick-actions fade-up">
+        <h3>⚡ Ações rápidas</h3>
+
+        <div class="actions-grid">
+
+          <a href="#tarefas" class="btn-primary">
+            ➕ Nova tarefa
+          </a>
+
+          <a href="#calendario" class="btn-secondary">
+            📅 Calendário
+          </a>
+
+          <a href="#configuracoes" class="btn-secondary">
+            ⚙ Configurações
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+  `;
+
+    iniciarAnimacaoContadores(page);
+    return page;
+}
+
+function iniciarAnimacaoContadores(container) {
+    const elementos = container.querySelectorAll("[data-value]");
+
+    elementos.forEach(elemento => {
+
+        const alvo = parseInt(
+            elemento.dataset.value.toString().replace("%", "")
+        );
+
+        let atual = 0;
+
+        const incremento = Math.max(1, Math.ceil(alvo / 30));
+
+        const timer = setInterval(() => {
+
+            atual += incremento;
+
+            if (atual >= alvo) {
+                atual = alvo;
+                clearInterval(timer);
+            }
+
+            elemento.textContent = elemento.dataset.value.includes("%") ?
+                `${atual}%` :
+                atual;
+
+        }, 20);
+
+    });
+}
 
 export default {
-    url: '#dashboard',
-    label: 'Dashboard',
-    pagina: createDashboardPage
+    url: "#dashboard",
+    label: "Dashboard",
+    pagina: dashboard
 };

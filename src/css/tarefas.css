@@ -1,10 +1,32 @@
 /* css/tarefas.css */
 
+.tarefas-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+}
+
+.search-box {
+    padding: 0.5rem 1rem;
+}
+
+.search-box input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.search-box input:focus {
+    outline: none;
 }
 
 .tarefas-container {
@@ -13,23 +35,37 @@
     gap: 1rem;
 }
 
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 2rem;
+}
+
 .task-card {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    /* Checkbox | Conteúdo | Ações */
-    align-items: center;
-    gap: 1rem;
     background: var(--surface);
     border: 1px solid var(--border);
     border-left: 4px solid var(--primary);
-    border-radius: 20px;
-    padding: 18px;
+    border-radius: 22px;
+    padding: 20px;
     transition: .3s;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .task-card:hover {
-    transform: translateY(-2px);
-    border-left-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.task-header h3 {
+    margin-right: 1rem;
 }
 
 /* --- Checkbox Customizado --- */
@@ -37,34 +73,37 @@
     position: relative;
 }
 
-.task-checkbox {
-    opacity: 0;
-    /* Esconde o checkbox real */
-    position: absolute;
-}
-
-.task-checkbox-label {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--border);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.check-container {
+    display: block;
+    position: relative;
     cursor: pointer;
-    transition: all 0.2s ease;
+    font-size: 22px;
+    user-select: none;
+    min-width: 24px;
 }
 
-.task-checkbox-label .check-icon {
-    fill: var(--text);
-    width: 16px;
-    height: 16px;
-    transform: scale(0);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.check-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
 }
 
-.task-checkbox-label:hover {
-    border-color: var(--primary);
+.checkmark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 24px;
+    width: 24px;
+    background-color: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    transition: .2s;
+}
+
+.check-container:hover input~.checkmark {
+    background-color: var(--surface-3);
 }
 
 /* Estado "checado" */
@@ -73,20 +112,32 @@
     border-color: var(--success);
 }
 
-.task-checkbox:checked+.task-checkbox-label .check-icon {
-    transform: scale(1) rotate(0deg);
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.check-container input:checked~.checkmark:after {
+    display: block;
+}
+
+.check-container .checkmark:after {
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
 }
 
 /* --- Conteúdo da Tarefa --- */
-.task-content .task-title {
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--text);
-    margin: 0;
-    transition: all 0.3s ease;
+.task-description {
+    color: var(--text-secondary);
 }
 
-.task-content .task-meta {
+.task-meta {
     display: flex;
     gap: 0.75rem;
     font-size: 0.85rem;
@@ -95,6 +146,145 @@
 }
 
 /* --- Ações e Prioridade --- */
+.task-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.calendar-menu {
+    position: absolute;
+    background-color: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.5rem;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.calendar-menu.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.calendar-menu button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 100%;
+}
+
+.calendar-menu button:hover {
+    background-color: var(--surface-2);
+    color: var(--text);
+}
+
+.task-priority {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* Variações de cor para prioridade */
+.task-card.priority-alta {
+    border-left-color: var(--danger);
+}
+
+.task-card.priority-media {
+    border-left-color: var(--warning);
+}
+
+.task-card.priority-baixa {
+    border-left-color: var(--success);
+}
+
+.task-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.icon-button .icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+.icon-button:hover {
+    background-color: var(--surface-2);
+}
+
+.icon-button:hover .icon {
+    color: var(--text);
+}
+
+/* --- Estado Concluído --- */
+.task-card.completed {
+    opacity: .75;
+    transform: scale(.98);
+    transition: .3s;
+}
+
+.task-card.completed .task-header h3 {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+/* Pills (filtros) */
+.filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .05);
+    cursor: pointer;
+    transition: .3s;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.filter-pill:hover {
+    background: var(--surface-3);
+    color: var(--text);
+}
+
+.filter-pill.active {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: white;
+}
+
 .task-actions {
     display: flex;
     align-items: center;

@@ -1,5 +1,5 @@
 // js/components/paginas/categorias.js
-import { tarefasStorage } from '../../tarefasStorage.js';
+import { carregarTarefas } from '../../tarefasStorage.js';
 
 // Mapeamento de categorias para cores e ícones (pode ser expandido)
 const categoryDetails = {
@@ -11,16 +11,16 @@ const categoryDetails = {
 };
 
 const createCategoriasPage = () => {
-    const tarefas = tarefasStorage.getTarefas();
+    const tarefas = carregarTarefas();
 
     // 1. Agrupar tarefas por categoria
     const statsPorCategoria = tarefas.reduce((acc, tarefa) => {
-        const categoria = tarefa.category || 'Sem Categoria';
+        const categoria = tarefa.categoria || 'Sem Categoria';
         if (!acc[categoria]) {
             acc[categoria] = { total: 0, concluidas: 0 };
         }
         acc[categoria].total++;
-        if (tarefa.completed) {
+        if (tarefa.concluida) {
             acc[categoria].concluidas++;
         }
         return acc;

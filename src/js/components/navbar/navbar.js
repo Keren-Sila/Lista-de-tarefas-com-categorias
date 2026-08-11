@@ -3,9 +3,16 @@ import { rotas } from '../../rotas.js';
 
 const createNavbar = () => {
     const navbarContainer = document.getElementById('navbar');
+    const mobileTabsContainer = document.querySelector('.mobile-tabs');
 
+    // --- Desktop Navbar ---
     const nav = document.createElement('nav');
     nav.className = 'navbar';
+
+    // Hide desktop navbar on smaller screens
+    if (window.innerWidth <= 768) {
+        nav.style.display = 'none';
+    }
 
     // Cria a logo
     const brand = document.createElement('a');
@@ -31,11 +38,39 @@ const createNavbar = () => {
     nav.appendChild(menu);
     navbarContainer.appendChild(nav);
 
+    // --- Mobile Tabs ---
+    const mobileNavContent = `
+        <a href="#dashboard" class="mobile-tab">
+            <span class="icon">🏠</span>
+            <span>Dashboard</span>
+        </a>
+        <a href="#tarefas" class="mobile-tab">
+            <span class="icon">✅</span>
+            <span>Tarefas</span>
+        </a>
+        <a href="#calendario" class="mobile-tab">
+            <span class="icon">📅</span>
+            <span>Agenda</span>
+        </a>
+        <a href="#categorias" class="mobile-tab">
+            <span class="icon">🏷️</span>
+            <span>Categorias</span>
+        </a>
+        <a href="#configuracoes" class="mobile-tab">
+            <span class="icon">⚙️</span>
+            <span>Ajustes</span>
+        </a>
+    `;
+    mobileTabsContainer.innerHTML = mobileNavContent;
+
     // Função para atualizar o link ativo
     const updateActiveLink = () => {
         const currentHash = window.location.hash || '#dashboard';
         document.querySelectorAll('.navbar-link').forEach(link => {
             link.classList.toggle('active', link.getAttribute('href') === currentHash);
+        });
+        document.querySelectorAll('.mobile-tab').forEach(tab => {
+            tab.classList.toggle('active', tab.getAttribute('href') === currentHash);
         });
     };
 

@@ -1,5 +1,5 @@
 // js/components/taskComponent.js
-import { tarefasStorage } from '../tarefasStorage.js';
+import { updateTaskStatus } from '../tarefasStorage.js';
 
 /**
  * Cria o elemento HTML para uma única tarefa.
@@ -8,15 +8,15 @@ import { tarefasStorage } from '../tarefasStorage.js';
  */
 export const createTaskComponent = (taskData) => {
     const taskCard = document.createElement('div');
-    const priorityClass = `priority-${taskData.priority.toLowerCase()}`;
-    taskCard.className = `task-card ${taskData.completed ? 'completed' : ''} ${priorityClass}`;
+    const priorityClass = `priority-${taskData.prioridade.toLowerCase()}`;
+    taskCard.className = `task-card ${taskData.concluida ? 'completed' : ''} ${priorityClass}`;
     taskCard.dataset.taskId = taskData.id;
 
     // A estrutura interna usa CSS Grid para flexibilidade
     taskCard.innerHTML = `
         <!-- Checkbox customizado para concluir a tarefa -->
         <div class="task-checkbox-wrapper">
-            <input type="checkbox" id="task-${taskData.id}" class="task-checkbox" ${taskData.completed ? 'checked' : ''}>
+            <input type="checkbox" id="task-${taskData.id}" class="task-checkbox" ${taskData.concluida ? 'checked' : ''}>
             <label for="task-${taskData.id}" class="task-checkbox-label">
                 <!-- Ícone de check para a animação -->
                 <svg class="check-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"></path></svg>
@@ -25,16 +25,16 @@ export const createTaskComponent = (taskData) => {
 
         <!-- Conteúdo principal da tarefa -->
         <div class="task-content">
-            <p class="task-title">${taskData.title}</p>
+            <p class="task-title">${taskData.titulo}</p>
             <div class="task-meta">
-                <span class="task-category">${taskData.category}</span>
-                <span class="task-time">${taskData.time}</span>
+                <span class="task-category">${taskData.categoria}</span>
+                <span class="task-time">${taskData.horario}</span>
             </div>
         </div>
 
         <!-- Prioridade e ações -->
         <div class="task-actions">
-            <span class="task-priority">${taskData.priority}</span>
+            <span class="task-priority">${taskData.prioridade}</span>
             <div class="task-buttons">
                 <button class="icon-button" title="Adicionar ao Calendário">
                     <!-- Placeholder para ícone de Calendário -->
@@ -55,7 +55,7 @@ export const createTaskComponent = (taskData) => {
         const taskId = taskCard.dataset.taskId;
 
         // Atualiza o status no localStorage
-        tarefasStorage.updateTaskStatus(taskId, isCompleted);
+        updateTaskStatus(taskId, isCompleted);
 
         // Atualiza o visual do card imediatamente
         taskCard.classList.toggle('completed', isCompleted);
