@@ -44,7 +44,7 @@ const createCategoriasPage = () => {
         const details = categoryDetails[nomeCategoria] || categoryDetails.Default;
 
         const card = document.createElement('div');
-        card.className = 'category-card glass-card';
+        card.className = 'category-card glass';
         card.innerHTML = `
             <div class="category-header">
                 <div class="category-icon" style="background-color: ${details.color};">

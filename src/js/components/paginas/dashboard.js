@@ -47,20 +47,20 @@ const createDashboardPage = () => {
 
     // 2. Cards de Estatísticas
     const statsCards = `
-        <section class="stats-grid">
-            <div class="stat-card glass-card">
+        <section class="dashboard-grid">
+            <div class="stat-card">
                 <h2>Tarefas Hoje</h2>
                 <p>${data.stats.today}</p>
             </div>
-            <div class="stat-card glass-card">
+            <div class="stat-card">
                 <h2>Concluídas</h2>
                 <p>${data.stats.completed}</p>
             </div>
-            <div class="stat-card glass-card">
+            <div class="stat-card">
                 <h2>Reuniões</h2>
                 <p>${data.stats.meetings}</p>
             </div>
-            <div class="stat-card glass-card">
+            <div class="stat-card">
                 <h2>Produtividade</h2>
                 <p>${data.stats.productivity}</p>
             </div>
@@ -71,7 +71,7 @@ const createDashboardPage = () => {
     const nextUpSection = `
         <section class="next-up-grid">
             ${data.nextTask ? `
-                <div class="next-task-card glass-card">
+                <div class="next-task-card glass">
                     <h3>Próxima tarefa</h3>
                     <div class="task-details">
                         <span class="task-title">${data.nextTask.title}</span>
@@ -83,9 +83,9 @@ const createDashboardPage = () => {
                     </div>
                 </div>
             ` : `
-                <div class="next-task-card glass-card"><h3 class="all-done">🎉 Todas as tarefas concluídas!</h3></div>
+                <div class="next-task-card glass"><h3 class="all-done">🎉 Todas as tarefas concluídas!</h3></div>
             `}
-            <div class="next-meetings-card glass-card">
+            <div class="next-meetings-card glass">
                 <h3>Próximas reuniões</h3>
                 ${data.nextMeetings.map(meeting => `
                     <div class="meeting-item">

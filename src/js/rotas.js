@@ -26,7 +26,9 @@ const rotear = () => {
     if (pagina && typeof pagina.pagina === 'function') {
         // Limpa o container e renderiza a nova página
         appContainer.innerHTML = '';
-        appContainer.appendChild(pagina.pagina());
+        const pageElement = pagina.pagina();
+        pageElement.classList.add('page-enter'); // Adiciona a classe de animação
+        appContainer.appendChild(pageElement);
     } else {
         // Página de erro 404 simples ou redireciona para o dashboard
         window.location.hash = '#dashboard';

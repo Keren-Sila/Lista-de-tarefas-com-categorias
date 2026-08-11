@@ -38,7 +38,7 @@ const showAddTaskModal = (page) => {
     const modalOverlay = document.createElement('div');
     modalOverlay.className = 'modal-overlay';
     modalOverlay.innerHTML = `
-        <div class="modal-content glass-card">
+        <div class="modal-content glass">
             <div class="modal-header">
                 <h2>Nova Tarefa</h2>
                 <button class="modal-close-btn">&times;</button>

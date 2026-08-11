@@ -19,21 +19,17 @@
     /* Checkbox | Conteúdo | Ações */
     align-items: center;
     gap: 1rem;
-    padding: 1rem 1.5rem;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: grab;
-    /* Indica que pode ser arrastado */
-}
-
-.task-card:active {
-    cursor: grabbing;
-    transform: scale(1.02);
-    background-color: var(--surface-2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+    border-radius: 20px;
+    padding: 18px;
+    transition: .3s;
 }
 
 .task-card:hover {
-    background-color: var(--surface);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px);
+    border-left-color: var(--accent);
 }
 
 /* --- Checkbox Customizado --- */
@@ -114,19 +110,22 @@
 }
 
 /* Variações de cor para prioridade */
-.task-card[data-priority="alta"] .task-priority {
+.task-card.priority-high {
     background-color: rgba(255, 107, 107, 0.15);
     color: var(--danger);
+    border-left-color: var(--danger);
 }
 
-.task-card[data-priority="média"] .task-priority {
+.task-card.priority-medium {
     background-color: rgba(251, 191, 36, 0.15);
     color: var(--warning);
+    border-left-color: var(--warning);
 }
 
-.task-card[data-priority="baixa"] .task-priority {
+.task-card.priority-low {
     background-color: rgba(45, 212, 167, 0.15);
     color: var(--success);
+    border-left-color: var(--success);
 }
 
 .task-buttons {
@@ -163,10 +162,26 @@
 
 /* --- Estado Concluído --- */
 .task-card.completed {
-    opacity: 0.6;
+    opacity: .7;
+    transform: scale(.99);
 }
 
 .task-card.completed .task-title {
     text-decoration: line-through;
     color: var(--text-secondary);
+}
+
+/* Pills (filtros) */
+.filter-pill {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, .05);
+    cursor: pointer;
+    transition: .3s;
+}
+
+.filter-pill.active {
+    background: var(--gradient-primary);
+    border-color: transparent;
 }

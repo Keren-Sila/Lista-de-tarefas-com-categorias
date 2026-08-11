@@ -8,9 +8,9 @@ import { tarefasStorage } from '../tarefasStorage.js';
  */
 export const createTaskComponent = (taskData) => {
     const taskCard = document.createElement('div');
-    taskCard.className = `task-card glass-card ${taskData.completed ? 'completed' : ''}`;
+    const priorityClass = `priority-${taskData.priority.toLowerCase()}`;
+    taskCard.className = `task-card ${taskData.completed ? 'completed' : ''} ${priorityClass}`;
     taskCard.dataset.taskId = taskData.id;
-    taskCard.dataset.priority = taskData.priority.toLowerCase();
 
     // A estrutura interna usa CSS Grid para flexibilidade
     taskCard.innerHTML = `
