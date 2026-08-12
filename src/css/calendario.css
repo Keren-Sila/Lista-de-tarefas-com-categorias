@@ -28,13 +28,14 @@
 }
 
 .day-column {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
+    background: rgba(17, 24, 39, 0.62);
+    border: 1px solid var(--border-glass);
+    border-radius: 18px;
     min-height: 420px;
     display: flex;
     flex-direction: column;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s ease;
+    box-shadow: var(--shadow-elevation);
 }
 
 .day-column.drag-over {
@@ -61,8 +62,8 @@
 .calendar-task {
     padding: 12px;
     border-radius: 14px;
-    background: rgba(255, 255, 255, .05);
-    border-left: 4px solid var(--primary);
+    background: rgba(124, 111, 247, 0.08);
+    border-left: 4px solid var(--primary-color);
     cursor: grab;
     transition: opacity 0.2s;
 }

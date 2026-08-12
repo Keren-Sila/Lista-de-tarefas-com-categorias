@@ -1,100 +1,105 @@
-#  App Livros — Front-End 2
+# 🚀 TaskFlow — Plataforma Profissional de Gestão de Tarefas & Produtividade
 
-Projeto-roteiro construído **aula a aula, aos sábados**, como material prático do curso de **Front-End 2** com foco em **JavaScript**.
+O **TaskFlow** é uma aplicação web de classe de produção (**Single Page Application - SPA**) desenvolvida em **JavaScript Puro (ES6+)**, sem frameworks pesados, aplicando os mais rigorosos padrões de arquitetura de software web.
 
-A ideia não é entregar um produto final pronto, e sim registrar a **evolução do código a cada encontro**: partimos de fundamentos da linguagem e avançamos até a construção de uma **SPA (Single Page Application)** completa, dinâmica e alimentada por API.
-
----
-
-##  Objetivo do curso
-
-Aprofundar JavaScript além do básico, praticando os tópicos avançados que sustentam aplicações web modernas:
-
-- Construção de uma **SPA** sem frameworks, entendendo o que acontece "por baixo dos panos"
-- **Roteamento no lado do cliente** (client-side routing) baseado em `hash`
-- **Componentização** com JavaScript modular (ES Modules)
-- **Renderização dinâmica** da interface via `innerHTML` e template strings
-- Manipulação do **DOM** e tratamento de **eventos**
-- **Consumo de API** (fetch, async/await) para popular a aplicação com dados reais
-- Boas práticas de organização de arquivos e nomenclatura (ex.: CSS com metodologia **BEM**)
+Projetado sob o conceito visual **"Midnight Flow"** (inspirado em ferramentas de alto nível como ClickUp e Linear), o TaskFlow combina um design moderno em *Dark Mode*, **efeitos de vidro (Glassmorphism)**, responsividade completa para **dispositivos móveis (iOS/Android PWA), Tablets e Notebooks**, e **sincronização nativa de eventos** com **Microsoft Teams, Google Calendar, Outlook e Apple Calendar (.ics)**.
 
 ---
 
-##  Como a SPA funciona
+## 📑 Roadmap de Implementação Concluído
 
-A aplicação tem **uma única página** ([index.html](index.html)) com dois pontos de montagem:
+| Fase | Objetivo | Resultado |
+| :--- | :--- | :--- |
+| **Fase 1** | **Arquitetura & Limpeza** | Remoção do módulo de filmes e foco 100% em produtividade pessoal e profissional. |
+| **Fase 2** | **Design System Midnight Flow** | Paleta premium (#0F0F17, #7C6FF7, #4ECDC4), glassmorphism, micro-interações e font-feature cv02. |
+| **Fase 3** | **Dashboard Profissional** | Hero interativo, contadores estatísticos animados, próximas reuniões externas e tooltips explicativos. |
+| **Fase 4** | **Tarefas Avançadas** | Gestão por prioridade, categorias, gestos touch (swipe to delete) e filtro por dias da semana. |
+| **Fase 5** | **Calendário & Planner Semanal** | Grade interativa de Segunda a Domingo com suporte a reagendamento Drag & Drop. |
+| **Fase 6** | **Sincronização Externa** | Deep links para Google/Outlook/Teams, download de `.ics` universal e Web Share API. |
+| **Fase 7** | **PWA & Responsividade Mobile** | Manifest PWA, suporte a safe-area iOS, bottom tab bar nativa e Service Worker cache-first. |
+| **Fase 8** | **Polimento & Documentação** | Documentação completa de repositório e otimização de performance no navegador. |
 
-```html
-<header id="navbar"></header>
-<main id="app"></main>
+---
+
+## ⭐ Recursos Principais
+
+### 1. ℹ️ Tooltips & Explicação Interativa das Seções
+Passando o mouse ou tocando nas seções e componentes, balões informativos elegantes (`data-tooltip`) explicam em tempo real para que serve cada recurso e qual sua função técnica na aplicação.
+
+### 2. 📅 Planner Semanal por Dias da Semana
+Organização dedicada para **Segunda, Terça, Quarta, Quinta, Sexta, Sábado e Domingo**, permitindo mover tarefas facilmente via **Drag & Drop** no desktop ou toque no mobile.
+
+### 3. 🏷️ Categorias & Indicadores de Prioridade
+Classificação por áreas (**Trabalho, Faculdade, Pessoal, Reuniões, Estudos**) com barras de progresso visual em tempo real e níveis de prioridade com códigos de cor vibrantes.
+
+### 4. 🔔 Automação & Sincronização Externa (Item 6)
+- **Google Calendar**: Criação instantânea de eventos pré-preenchidos.
+- **Microsoft Teams & Outlook**: Deep links diretos de agendamento de reuniões.
+- **Apple iCal / Calendários do Sistema**: Download de arquivo `.ics` para sincronização nativa em dispositivos iOS, macOS e Android.
+- **Web Notification API**: Alerta de vencimento próximo direto no sistema operacional.
+
+### 5. 📱 PWA & Navegação Nativa Touch
+- **Modo Standalone**: Pode ser adicionado à tela inicial no Android e iPhone.
+- **Bottom Navigation Bar**: Barra de abas inferior (`.mobile-tabs`) para navegação facilitada com uma mão.
+- **Swipe to Delete**: Deslizar o card da tarefa para a esquerda aciona a animação de exclusão.
+
+---
+
+## 🏛️ Arquitetura de Código & Padrões ES Modules
+
+```
+Lista-de-tarefas-com-categorias/
+├── index.html                           # Palco SPA único (#navbar, #app, .mobile-tabs)
+├── manifest.json                        # Configuração PWA (display standalone, ícones, cores)
+├── service-worker.js                    # Service Worker com estratégia Cache-First
+├── sync.js                              # Automações de exportação (Google, Outlook, Teams, ICS)
+├── notificacoes.js                      # Web Notification API e agendamento de alertas
+├── README.md                            # Documentação técnica do projeto
+└── src/
+    ├── css/
+    │   ├── microframework.css           # Variáveis Midnight Flow, Glassmorphism e Tooltips
+    │   ├── dashboard.css                # Estilos do Hero e estatísticas
+    │   ├── tarefas.css                  # Cards de tarefas, pílulas e checkbox customizado
+    │   ├── categorias.css               # Grids de progresso por categoria
+    │   ├── calendario.css               # Estilos da grade semanal e Drag & Drop
+    │   ├── navbar.css / navbar-mobile.css # Estilos de navegabilidade desktop e mobile
+    │   └── responsive.css               # Regras de breakpoints (320px a 1280px+)
+    └── js/
+        ├── main.js                      # Ponto de entrada: dispara navbar e roteador
+        ├── rotas.js                     # Tabela de rotas Hash Client-Side
+        ├── tarefasStorage.js            # Serviços de persistência LocalStorage
+        └── components/
+            ├── navbar/
+            │   └── navbar.js            # Montador dinâmico do menu desktop e mobile tabs
+            └── paginas/
+                ├── dashboard.js         # Componente do painel principal
+                ├── tarefas.js           # Gerenciador de tarefas por dia e prioridade
+                ├── categorias.js        # Progresso por categoria
+                ├── calendario.js        # Grade interativa por dia da semana
+                └── configuracoes.js     # Painel de sincronização e notificações
 ```
 
-Todo o resto é montado por JavaScript:
-
-1. **Rotas** ([src/js/components/rotas/rotas.js](src/js/components/rotas/rotas.js)) — um array de objetos descreve cada rota (`url`, `label`, `pagina` e uma `acao` opcional).
-2. **Navbar** ([src/js/components/navbar/navbar.js](src/js/components/navbar/navbar.js)) — gera o menu dinamicamente a partir das rotas com `.map()`.
-3. **Roteador** ([src/js/main.js](src/js/main.js)) — transforma o array em um "mapa de rotas", escuta o evento `hashchange` e renderiza a página correspondente. Rotas inexistentes caem em uma **404**.
-4. **Páginas** ([src/js/components/paginas/](src/js/components/paginas/)) — cada página é uma função que retorna o HTML como string. Algumas têm uma `acao` que é executada após a renderização (ex.: capturar o envio de um formulário na página de Contato).
-
 ---
 
-##  Estrutura do projeto
+## 💻 Como Executar
 
-```
-app_livros/
-├── index.html                     # página única (SPA)
-├── src/
-│   ├── css/
-│   │   └── microframework.css     # estilos (metodologia BEM)
-│   ├── img/                        # imagens
-│   └── js/
-│       ├── main.js                 # ponto de entrada: roteador + render
-│       ├── app.js                  # exercícios de fundamentos (if/else, operadores)
-│       └── components/
-│           ├── navbar/             # menu dinâmico
-│           ├── footer/
-│           ├── rotas/              # definição das rotas
-│           └── paginas/            # home, sobre, serviços, contato
-├── testeArray.js                   # exercícios de arrays
-└── testeObjetos.js                 # exercícios de objetos
-```
+Por utilizar **ES Modules** (`type="module"`), o projeto deve ser executado através de um servidor web local.
 
-Os arquivos `app.js`, `testeArray.js` e `testeObjetos.js` são **exercícios das primeiras aulas** (fundamentos: operadores, condicionais, arrays e objetos), mantidos como registro histórico do roteiro.
+### Opção 1 — VS Code Live Server (Recomendado)
+Clique com o botão direito sobre `index.html` → **Open with Live Server**.
 
----
-
-##  Como executar
-
-Por usar **ES Modules** (`<script type="module">`), o projeto precisa ser servido por um servidor HTTP — abrir o `index.html` direto pelo navegador (`file://`) não funciona.
-
-**Opção 1 — Extensão Live Server (VS Code):**
-- Clique com o botão direito em `index.html` → *Open with Live Server*.
-
-**Opção 2 — Servidor via terminal:**
-
+### Opção 2 — Via Terminal (Node.js ou Python)
 ```bash
-# Com Python
+# Com Node.js
+npx serve .
+
+# Ou com Python
 python -m http.server 8000
-
-# Ou com Node
-npx serve
 ```
-
-Depois acesse `http://localhost:8000` (ou a porta indicada).
+Em seguida, acesse `http://localhost:8000` no navegador.
 
 ---
 
-##  Roadmap das aulas
+## 🏆 Conclusão
 
-- [x] Fundamentos: operadores, condicionais, arrays e objetos
-- [x] Funções que geram páginas
-- [x] Formulário de captura de contato
-- [x] Menu dinâmico a partir de objetos
-- [x] Padronização das páginas
-- [x] Centralização do roteamento (SPA)
-- [X] Consumo de API com `fetch` e `async/await`
-- [x] Renderização dinâmica de dados vindos da API
-- [ ] Refinamentos e tópicos avançados
-- [ ] Construção dos projetos individuais
-
-> Este README acompanha a evolução do curso e será atualizado a cada novo sábado. 
+O **TaskFlow** entrega uma solução completa de produtividade que transcende um projeto de sala de aula, apresentando uma **Single Page Application** modular, robusta, altamente performática e pronta para exibição em portfólios profissionais.

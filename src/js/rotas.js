@@ -3,7 +3,7 @@ import dashboard from './components/paginas/dashboard.js';
 import tarefas from './components/paginas/tarefas.js';
 import categorias from './components/paginas/categorias.js';
 import calendario from './components/paginas/calendario.js';
-// import configuracoes from '../paginas/configuracoes.js';
+import configuracoes from './components/paginas/configuracoes.js';
 
 // Mapeia as URLs (hash) para os módulos das páginas
 export const rotas = {
@@ -11,7 +11,7 @@ export const rotas = {
     '#tarefas': tarefas,
     '#categorias': categorias,
     '#calendario': calendario,
-    // '#configuracoes': configuracoes,
+    '#configuracoes': configuracoes,
 };
 
 // Função principal do roteador

@@ -6,41 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>TaskFlow - Smart Weekly Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>TaskFlow - Smart Workspace</title>
 
     <!-- PWA & Mobile Meta Tags -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#7C6FF7">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#6366F1">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="TaskFlow">
-    <link rel="apple-touch-icon" href="/src/img/icons/icon-192.png">
-    <link rel="apple-touch-startup-image" href="/src/img/icons/splash-2048.png">
+    <link rel="apple-touch-icon" href="./src/img/icons/icon-192.png">
+    <link rel="apple-touch-startup-image" href="./src/img/icons/splash-2048.png">
 
-    <link rel="stylesheet" href="src/css/microframework.css">
-    <link rel="stylesheet" href="src/css/dashboard.css">
-    <link rel="stylesheet" href="src/css/tarefas.css">
-    <link rel="stylesheet" href="src/css/navbar.css">
-    <link rel="stylesheet" href="src/css/categorias.css">
-    <link rel="stylesheet" href="src/css/modal.css">
-    <link rel="stylesheet" href="src/css/responsive.css">
-    <link rel="stylesheet" href="src/css/calendario.css">
-    <link rel="stylesheet" href="src/css/navbar-mobile.css">
+    <link rel="stylesheet" href="./src/css/microframework.css">
+    <link rel="stylesheet" href="./src/css/dashboard.css">
+    <link rel="stylesheet" href="./src/css/tarefas.css">
+    <link rel="stylesheet" href="./src/css/navbar.css">
+    <link rel="stylesheet" href="./src/css/categorias.css">
+    <link rel="stylesheet" href="./src/css/modal.css">
+    <link rel="stylesheet" href="./src/css/responsive.css">
+    <link rel="stylesheet" href="./src/css/calendario.css">
+    <link rel="stylesheet" href="./src/css/navbar-mobile.css">
 </head>
 
-<body>
-    <header id="navbar"></header>
-    <main id="app"></main>
+<body data-theme="dark">
+    <div class="app-layout">
+        <!-- Sidebar Esquerda ClickUp -->
+        <aside id="navbar" class="clickup-sidebar"></aside>
+        
+        <!-- Área Principal (Topbar Breadcrumb + Palco SPA #app) -->
+        <div class="app-main-wrapper">
+            <header id="clickup-topbar-container"></header>
+            <main id="app"></main>
+        </div>
+    </div>
+
+    <!-- Navegação Inferior para Dispositivos Móveis -->
     <nav class="mobile-tabs"></nav>
-    <!-- <script src="src/app.js"></script> -->
-    <script src="src/js/main.js" type="module"></script>
+
+    <script src="./src/js/main.js" type="module"></script>
     <script>
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", async () => {
                 try {
-                    await navigator.serviceWorker.register("/service-worker.js");
+                    await navigator.serviceWorker.register("./service-worker.js");
                     console.log("Service Worker registrado");
                 } catch (e) {
                     console.error("Falha ao registrar o Service Worker:", e);

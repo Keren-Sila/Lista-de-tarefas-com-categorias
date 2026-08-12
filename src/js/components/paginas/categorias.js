@@ -1,21 +1,19 @@
-// js/components/paginas/categorias.js
 import { carregarTarefas } from '../../tarefasStorage.js';
 
-// Mapeamento de categorias para cores e ícones (pode ser expandido)
 const categoryDetails = {
-    'Faculdade': { color: '#7C6FF7', icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18"></path></svg>' },
-    'Trabalho': { color: '#4ECDC4', icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>' },
-    'Estudos': { color: '#FBBF24', icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18"></path></svg>' },
-    'Pessoal': { color: '#FF6B6B', icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>' },
-    'Default': { color: '#94A3B8', icon: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>' }
+    'Faculdade': { color: '#6366F1', icon: '🎓' },
+    'Trabalho': { color: '#06B6D4', icon: '💼' },
+    'Estudos': { color: '#F59E0B', icon: '📚' },
+    'Pessoal': { color: '#EF4444', icon: '🏠' },
+    'Reuniões': { color: '#10B981', icon: '🤝' },
+    'Default': { color: '#64748B', icon: '🏷️' }
 };
 
 const createCategoriasPage = () => {
     const tarefas = carregarTarefas();
 
-    // 1. Agrupar tarefas por categoria
     const statsPorCategoria = tarefas.reduce((acc, tarefa) => {
-        const categoria = tarefa.categoria || 'Sem Categoria';
+        const categoria = tarefa.categoria || 'Pessoal';
         if (!acc[categoria]) {
             acc[categoria] = { total: 0, concluidas: 0 };
         }
@@ -26,43 +24,63 @@ const createCategoriasPage = () => {
         return acc;
     }, {});
 
-    // 2. Criar o container da página
     const page = document.createElement('div');
-    page.className = 'categorias-container';
+    page.className = 'categorias-container page-enter';
 
-    const pageTitle = document.createElement('h1');
-    pageTitle.textContent = 'Progresso por Categoria';
-    page.appendChild(pageTitle);
+    page.innerHTML = `
+        <section class="tarefas-page">
+            <div class="tarefas-header info-hover-box" data-tooltip="Visão do progresso por categoria no ClickUp Workspace. Acompanhe a taxa de conclusão." style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; color: #0F172A;">🏷️ Categorias & Progresso</h1>
+                    <p style="color: #64748B; font-size: 0.95rem; margin-top: 4px;">
+                        Medição de entregas e progresso percentual por área de atuação.
+                    </p>
+                </div>
+                <span class="info-badge">ℹ️ Progresso em tempo real</span>
+            </div>
 
-    const grid = document.createElement('div');
-    grid.className = 'category-grid';
+            <div class="category-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 16px;"></div>
+        </section>
+    `;
 
-    // 3. Criar um card para cada categoria
+    const grid = page.querySelector('.category-grid');
+
     for (const nomeCategoria in statsPorCategoria) {
         const stats = statsPorCategoria[nomeCategoria];
         const percentual = stats.total > 0 ? Math.round((stats.concluidas / stats.total) * 100) : 0;
         const details = categoryDetails[nomeCategoria] || categoryDetails.Default;
 
         const card = document.createElement('div');
-        card.className = 'category-card glass';
+        card.className = 'category-card glass-card info-hover-box';
+        card.setAttribute('data-tooltip', `Categoria ${nomeCategoria}: ${stats.concluidas} de ${stats.total} tarefas concluídas (${percentual}%).`);
+        card.style.padding = '20px';
+        card.style.borderRadius = '16px';
+        card.style.background = '#FFFFFF';
+        card.style.border = '1px solid #E2E8F0';
+
         card.innerHTML = `
-            <div class="category-header">
-                <div class="category-icon" style="background-color: ${details.color};">
+            <div class="category-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+                <div class="category-icon" style="background-color: ${details.color}15; color: ${details.color}; width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; border: 1px solid ${details.color}30;">
                     ${details.icon}
                 </div>
-                <h2 class="category-title">${nomeCategoria}</h2>
+                <div>
+                    <h3 class="category-title" style="margin: 0; color: #0F172A; font-size: 1.1rem; font-weight: 700;">${nomeCategoria}</h3>
+                    <span style="font-size: 0.85rem; color: #64748B;">${stats.concluidas} de ${stats.total} concluídas</span>
+                </div>
             </div>
-            <div class="category-stats">
-                <span>${stats.total} tarefas</span> &bull; <span>${percentual}% concluído</span>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #475569; margin-bottom: 8px;">
+                <span>Progresso</span>
+                <span style="font-weight: 700; color: ${details.color};">${percentual}%</span>
             </div>
-            <div class="progress-bar-container">
-                <div class="progress-bar" style="width: ${percentual}%; background-color: ${details.color};"></div>
+
+            <div class="progress-bar-container" style="background: #E2E8F0; height: 8px; border-radius: 999px; overflow: hidden;">
+                <div class="progress-bar" style="width: ${percentual}%; background-color: ${details.color}; height: 100%; border-radius: 999px; transition: width 0.4s ease;"></div>
             </div>
         `;
         grid.appendChild(card);
     }
 
-    page.appendChild(grid);
     return page;
 };
 
