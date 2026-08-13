@@ -1,8 +1,6 @@
-# TaskFlow — SPA de Lista de Tarefas com Categorias (Arquitetura da Apostila)
+# TaskFlow — SPA de Lista de Tarefas & Produtividade (Padrão de Produto)
 
-**TaskFlow** é uma aplicação web **Single Page Application (SPA)** desenvolvida em **JavaScript Puro (Vanilla JS - ES Modules)** seguindo com 100% de fidelidade a arquitetura e os padrões ensinados no curso **Front-End 2 (App Livros)**.
-
-A aplicação foi adaptada para um sistema completo de gestão de tarefas com categorias, prioridades Soft UI, organização por turnos (Manhã / Tarde / Noite) e dias da semana, integrando planner semanal/mensal/diário e suporte a **PWA e Offline-First**.
+**TaskFlow** é uma aplicação web **Single Page Application (SPA)** desenvolvida em **JavaScript Puro (Vanilla JS - ES Modules)** com visual **Dark Glassmorphic** inspirado na estética do portfólio da Keren: paleta em tons profundos (#0B0F19, #1E293B), efeitos de iluminação em roxo/índigo (#7C3AED, #6366F1, #06B6D4), fundo animado com formas flutuantes (`floating-shape`), grid-overlay técnico, badges com status dot pulsante, tooltips elegantes de grafite e 100% de suporte a **PWA e Offline-First**.
 
 ---
 

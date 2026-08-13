@@ -15,44 +15,72 @@ const diasNomes = {
     domingo: "Domingo"
 };
 
+function getDatasDaSemana() {
+    const hoje = new Date();
+    const diaDaSemana = hoje.getDay(); // 0 é Domingo, 1 é Segunda
+    const distParaSegunda = (diaDaSemana === 0 ? -6 : 1 - diaDaSemana);
+
+    const segunda = new Date(hoje);
+    segunda.setDate(hoje.getDate() + distParaSegunda);
+
+    const datas = {};
+    diasSemana.forEach((key, idx) => {
+        const d = new Date(segunda);
+        d.setDate(segunda.getDate() + idx);
+        const diaNum = String(d.getDate()).padStart(2, '0');
+        const mesNome = d.toLocaleString('pt-BR', { month: 'short' }).replace('.', '').toUpperCase();
+        datas[key] = {
+            formatado: `${diaNum} ${mesNome}`,
+            iso: d.toISOString().split('T')[0],
+            eHoje: d.toDateString() === hoje.toDateString()
+        };
+    });
+    return datas;
+}
+
 async function calendario(app) {
     let tarefas = carregarTarefas();
 
     const concluidas = tarefas.filter(t => t.concluida).length;
     const progresso = tarefas.length ? Math.round((concluidas / tarefas.length) * 100) : 0;
+    const datasSemana = getDatasDaSemana();
 
     app.innerHTML = `
         <section class="calendar-page calendar-page-wrapper page-enter">
+            <!-- Header do Planner -->
             <div class="calendar-header glass">
                 <div class="header-titles">
+                    <div class="badge-status mb-2">
+                        <span class="badge-dot"></span> Visão Semanal Inteligente
+                    </div>
                     <h1>📅 Planner & Calendário</h1>
-                    <p>Organize sua semana por dias e turnos com arrastar e soltar (Drag and Drop).</p>
+                    <p>Gerencie seus compromissos da semana em linhas horizontais com arrastar e soltar e criação rápida por dia.</p>
                 </div>
 
                 <div class="view-switchers">
                     <div class="view-mode-toggle">
-                        <button class="view-btn active" data-view="semanal">Semanal</button>
-                        <button class="view-btn" data-view="diario">Diário</button>
-                        <button class="view-btn" data-view="mensal">Mensal</button>
+                        <button class="view-btn active" data-view="semanal" data-tooltip="Visão Semanal Horizontal">Semanal</button>
+                        <button class="view-btn" data-view="diario" data-tooltip="Visão Diária por Turnos">Diário</button>
+                        <button class="view-btn" data-view="mensal" data-tooltip="Visão Mensal">Mensal</button>
                     </div>
-
-                    <button id="btnCalendarioNovaTarefa" class="btn-primary">➕ Nova Tarefa</button>
                 </div>
             </div>
 
+            <!-- Palco da Visão Ativa -->
             <div id="calendarViewContainer">
-                ${renderVisaoSemanal(tarefas)}
+                ${renderVisaoSemanal(tarefas, datasSemana)}
             </div>
 
+            <!-- Rodapé de Estatísticas -->
             <div class="calendar-footer card glass">
                 <div class="footer-stat">
-                    <strong>Carga da Semana:</strong> ${tarefas.length} tarefas planejadas
+                    <strong>Carga da Semana:</strong> ${tarefas.length} tarefas (${concluidas} concluídas)
                 </div>
                 <div class="week-progress">
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill" style="width:${progresso}%"></div>
                     </div>
-                    <span>${progresso}% da semana concluída</span>
+                    <span><strong>${progresso}%</strong> concluído</span>
                 </div>
             </div>
         </section>
@@ -61,6 +89,7 @@ async function calendario(app) {
     const viewContainer = app.querySelector('#calendarViewContainer');
     const viewBtns = app.querySelectorAll('.view-btn');
 
+    // Troca de Visões
     viewBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             viewBtns.forEach(b => b.classList.remove('active'));
@@ -69,100 +98,177 @@ async function calendario(app) {
 
             tarefas = carregarTarefas();
             if (modo === 'semanal') {
-                viewContainer.innerHTML = renderVisaoSemanal(tarefas);
-                iniciarDragAndDrop(app);
+                viewContainer.innerHTML = renderVisaoSemanal(tarefas, datasSemana);
             } else if (modo === 'diario') {
                 viewContainer.innerHTML = renderVisaoDiaria(tarefas);
             } else if (modo === 'mensal') {
                 viewContainer.innerHTML = renderVisaoMensal(tarefas);
             }
+
+            configurarEventosCalendario(app, viewContainer);
         });
     });
 
-    const btnNova = app.querySelector('#btnCalendarioNovaTarefa');
-    if (btnNova) {
-        btnNova.addEventListener('click', () => abrirModalTarefa(null, () => {
-            tarefas = carregarTarefas();
-            viewContainer.innerHTML = renderVisaoSemanal(tarefas);
-            iniciarDragAndDrop(app);
-        }));
-    }
-
-    iniciarDragAndDrop(app);
+    configurarEventosCalendario(app, viewContainer);
 }
 
-function renderVisaoSemanal(tarefas) {
+/* Renderização da Visão Semanal Horizontal */
+function renderVisaoSemanal(tarefas, datasSemana) {
     return `
-        <div class="calendar-grid">
-            ${diasSemana.map(dia => colunaDia(dia, tarefas)).join("")}
+        <div class="calendar-horizontal-rows">
+            ${diasSemana.map(dia => linhaDiaHorizontal(dia, tarefas, datasSemana[dia])).join("")}
         </div>
     `;
 }
 
-function colunaDia(dia, tarefas) {
+function linhaDiaHorizontal(dia, tarefas, infoData) {
     const tarefasDoDia = tarefas.filter(t => t.diaSemana === dia);
 
     return `
-        <div class="day-column card glass" data-day="${dia}">
-            <div class="day-header">
-                <span class="day-title">${diasNomes[dia]}</span>
-                <span class="day-badge">${tarefasDoDia.length}</span>
+        <div class="day-row card glass ${infoData.eHoje ? 'is-today' : ''}" data-day="${dia}">
+            <div class="day-row-header">
+                <div class="day-row-title-box">
+                    <div class="day-title-top">
+                        <span class="day-row-title">${diasNomes[dia]}</span>
+                        ${infoData.eHoje ? '<span class="badge-today"><span class="badge-dot"></span> HOJE</span>' : ''}
+                    </div>
+                    <div class="day-date-row">
+                        <span class="day-date-tag">${infoData.formatado}</span>
+                        <span class="day-row-count">${tarefasDoDia.length} ${tarefasDoDia.length === 1 ? 'atividade' : 'atividades'}</span>
+                    </div>
+                </div>
             </div>
-            <div class="day-content">
-                ${tarefasDoDia.length > 0 ? tarefasDoDia.map(cardCalendario).join("") : '<div class="empty-day-drop">Solte tarefas aqui</div>'}
+
+            <div class="day-row-content">
+                ${tarefasDoDia.length > 0 ? tarefasDoDia.map(cardCalendarioHorizontal).join("") : `
+                    <div class="empty-day-drop-horizontal" data-day="${dia}">
+                        <div class="empty-drop-content">
+                            <span class="drop-icon">📥</span>
+                            <span>Nenhuma atividade agendada. Arraste ou solte uma tarefa aqui para este dia.</span>
+                        </div>
+                    </div>
+                `}
             </div>
         </div>
     `;
 }
 
-function cardCalendario(tarefa) {
+function cardCalendarioHorizontal(tarefa) {
     return `
-        <div class="calendar-task priority-border-${tarefa.prioridade} ${tarefa.concluida ? 'completed' : ''}" draggable="true" data-id="${tarefa.id}">
-            <div class="cal-task-top">
-                <span class="calendar-time">⏰ ${tarefa.horario || "09:00"}</span>
-                <span class="priority-dot priority-${tarefa.prioridade}"></span>
+        <div class="calendar-task-horizontal priority-border-${tarefa.prioridade} ${tarefa.concluida ? 'completed' : ''}" draggable="true" data-id="${tarefa.id}">
+            <label class="custom-checkbox" data-tooltip="Marcar/Desmarcar conclusão">
+                <input type="checkbox" class="cal-task-checkbox" data-id="${tarefa.id}" ${tarefa.concluida ? 'checked' : ''}>
+                <span class="checkmark"></span>
+            </label>
+
+            <div class="cal-task-main">
+                <div class="cal-task-header-row">
+                    <span class="calendar-time">⏰ ${tarefa.horario || "09:00"}</span>
+                    <span class="priority-pill priority-pill-${tarefa.prioridade} mini">${tarefa.prioridade}</span>
+                </div>
+                <strong class="cal-task-title ${tarefa.concluida ? 'line-through' : ''}">${tarefa.titulo}</strong>
             </div>
-            <strong class="cal-task-title">${tarefa.titulo}</strong>
-            <div class="cal-task-bottom">
-                <span class="cal-task-cat">#${tarefa.categoria}</span>
+
+            <div class="cal-task-tags">
+                <span class="tag-category">#${tarefa.categoria}</span>
                 ${tarefa.provedorReuniao ? `<span class="badge-provider mini provider-${tarefa.provedorReuniao.toLowerCase()}">📹 ${tarefa.provedorReuniao}</span>` : ''}
+            </div>
+
+            <div class="cal-task-actions">
+                <button class="btn-icon btn-edit-cal-task" data-id="${tarefa.id}" data-tooltip="Editar detalhes">✏️</button>
+                <button class="btn-icon btn-delete-cal-task" data-id="${tarefa.id}" data-tooltip="Excluir tarefa">🗑️</button>
             </div>
         </div>
     `;
 }
 
 function renderVisaoDiaria(tarefas) {
-    const hojeStr = new Date().toISOString().split("T")[0];
-    const tarefasHoje = tarefas.filter(t => t.data === hojeStr || !t.data);
+    const hoje = new Date();
+    const hojeStr = hoje.toISOString().split("T")[0];
+    const dataLabel = hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    const tarefasHoje = tarefas.filter(t => (t.data === hojeStr || !t.data) && !t.concluida);
 
-    const manha = tarefasHoje.filter(t => t.turno === 'manha' || (t.horario && parseInt(t.horario.split(':')[0]) < 12));
-    const tarde = tarefasHoje.filter(t => t.turno === 'tarde' || (t.horario && parseInt(t.horario.split(':')[0]) >= 12 && parseInt(t.horario.split(':')[0]) < 18));
-    const noite = tarefasHoje.filter(t => t.turno === 'noite' || (t.horario && parseInt(t.horario.split(':')[0]) >= 18));
+    const ordenarPorHorario = (lista) => [...lista].sort((a, b) => {
+        const horaA = a.horario ? parseInt(a.horario.split(':')[0], 10) : 0;
+        const horaB = b.horario ? parseInt(b.horario.split(':')[0], 10) : 0;
+        return horaA - horaB;
+    });
+
+    const manha = ordenarPorHorario(tarefasHoje.filter(t => t.turno === 'manha' || (t.horario && parseInt(t.horario.split(':')[0], 10) < 12)));
+    const tarde = ordenarPorHorario(tarefasHoje.filter(t => t.turno === 'tarde' || (t.horario && parseInt(t.horario.split(':')[0], 10) >= 12 && parseInt(t.horario.split(':')[0], 10) < 18)));
+    const noite = ordenarPorHorario(tarefasHoje.filter(t => t.turno === 'noite' || (t.horario && parseInt(t.horario.split(':')[0], 10) >= 18)));
 
     return `
         <div class="daily-view-container card glass">
-            <h2>☀️ Visão Detalhada do Dia (${hojeStr})</h2>
+            <div class="daily-view-header">
+                <div>
+                    <span class="section-kicker">Agenda do Dia</span>
+                    <h2>☀️ ${dataLabel.charAt(0).toUpperCase() + dataLabel.slice(1)}</h2>
+                </div>
+                <span class="daily-total-badge">${tarefasHoje.length} tarefas pendentes</span>
+            </div>
+
             <div class="daily-shifts-grid">
-                <div class="daily-shift-box">
-                    <h3>🌅 Manhã (05h - 12h)</h3>
+                <!-- Turno 1: Manhã -->
+                <div class="daily-shift-box shift-manha">
+                    <div class="shift-box-header">
+                        <h3>🌅 Manhã</h3>
+                        <span class="shift-time-tag">05h - 12h</span>
+                    </div>
                     <div class="daily-tasks-list">
-                        ${manha.length > 0 ? manha.map(t => cardCalendario(t)).join('') : '<p class="empty-shift">Sem tarefas para a manhã.</p>'}
+                        ${manha.length > 0 ? manha.map(t => cardVisaoDiaria(t)).join('') : `
+                            <div class="empty-shift-box">
+                                <span>🌅 Sem tarefas para a manhã</span>
+                            </div>
+                        `}
                     </div>
                 </div>
 
-                <div class="daily-shift-box">
-                    <h3>☀️ Tarde (12h - 18h)</h3>
+                <!-- Turno 2: Tarde -->
+                <div class="daily-shift-box shift-tarde">
+                    <div class="shift-box-header">
+                        <h3>☀️ Tarde</h3>
+                        <span class="shift-time-tag">12h - 18h</span>
+                    </div>
                     <div class="daily-tasks-list">
-                        ${tarde.length > 0 ? tarde.map(t => cardCalendario(t)).join('') : '<p class="empty-shift">Sem tarefas para a tarde.</p>'}
+                        ${tarde.length > 0 ? tarde.map(t => cardVisaoDiaria(t)).join('') : `
+                            <div class="empty-shift-box">
+                                <span>☀️ Sem tarefas para a tarde</span>
+                            </div>
+                        `}
                     </div>
                 </div>
 
-                <div class="daily-shift-box">
-                    <h3>🌙 Noite (18h - 23h59)</h3>
+                <!-- Turno 3: Noite -->
+                <div class="daily-shift-box shift-noite">
+                    <div class="shift-box-header">
+                        <h3>🌙 Noite</h3>
+                        <span class="shift-time-tag">18h - 23h59</span>
+                    </div>
                     <div class="daily-tasks-list">
-                        ${noite.length > 0 ? noite.map(t => cardCalendario(t)).join('') : '<p class="empty-shift">Sem tarefas para a noite.</p>'}
+                        ${noite.length > 0 ? noite.map(t => cardVisaoDiaria(t)).join('') : `
+                            <div class="empty-shift-box">
+                                <span>🌙 Sem tarefas para a noite</span>
+                            </div>
+                        `}
                     </div>
                 </div>
+            </div>
+        </div>
+    `;
+}
+
+function cardVisaoDiaria(tarefa) {
+    return `
+        <div class="daily-task-card priority-border-${tarefa.prioridade}">
+            <div class="daily-task-top">
+                <span class="calendar-time">⏰ ${tarefa.horario || "09:00"}</span>
+                <span class="priority-pill priority-pill-${tarefa.prioridade} mini">${tarefa.prioridade}</span>
+            </div>
+            <strong class="daily-task-title">${tarefa.titulo}</strong>
+            <div class="daily-task-footer">
+                <span class="tag-category">#${tarefa.categoria}</span>
+                ${tarefa.provedorReuniao ? `<span class="badge-provider mini provider-${tarefa.provedorReuniao.toLowerCase()}">📹 ${tarefa.provedorReuniao}</span>` : ''}
             </div>
         </div>
     `;
@@ -209,30 +315,84 @@ function renderVisaoMensal(tarefas) {
     `;
 }
 
-function iniciarDragAndDrop(container) {
-    const colunas = container.querySelectorAll('.day-column');
-    colunas.forEach(coluna => {
-        coluna.addEventListener("dragover", e => {
-            e.preventDefault();
-            coluna.classList.add('drag-over');
-        });
+function configurarEventosCalendario(app, viewContainer) {
+    iniciarDragAndDrop(viewContainer);
 
-        coluna.addEventListener("dragleave", () => {
-            coluna.classList.remove('drag-over');
-        });
-
-        coluna.addEventListener("drop", e => {
-            e.preventDefault();
-            coluna.classList.remove('drag-over');
-            const id = e.dataTransfer.getData("text/plain");
-            const novoDia = coluna.dataset.day;
-
-            moverTarefaParaDia(id, novoDia);
-            window.dispatchEvent(new HashChangeEvent('hashchange'));
+    // Listener para checkboxes dentro dos cards
+    viewContainer.querySelectorAll('.cal-task-checkbox').forEach(chk => {
+        chk.addEventListener('change', (e) => {
+            const id = e.target.dataset.id;
+            const tarefas = carregarTarefas();
+            const idx = tarefas.findIndex(t => t.id === id);
+            if (idx !== -1) {
+                tarefas[idx].concluida = e.target.checked;
+                salvarTarefas(tarefas);
+                const datasSemana = getDatasDaSemana();
+                viewContainer.innerHTML = renderVisaoSemanal(tarefas, datasSemana);
+                configurarEventosCalendario(app, viewContainer);
+            }
         });
     });
 
-    const cards = container.querySelectorAll('.calendar-task');
+    // Listener para edição de tarefas no calendário
+    viewContainer.querySelectorAll('.btn-edit-cal-task').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = btn.dataset.id;
+            const tarefas = carregarTarefas();
+            const tarefa = tarefas.find(t => t.id === id);
+            if (tarefa) {
+                abrirModalTarefa(tarefa, () => {
+                    const tarefasAtualizadas = carregarTarefas();
+                    const datasSemana = getDatasDaSemana();
+                    viewContainer.innerHTML = renderVisaoSemanal(tarefasAtualizadas, datasSemana);
+                    configurarEventosCalendario(app, viewContainer);
+                });
+            }
+        });
+    });
+
+    // Listener para exclusão de tarefas no calendário
+    viewContainer.querySelectorAll('.btn-delete-cal-task').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = btn.dataset.id;
+            if (confirm('Deseja realmente excluir esta tarefa?')) {
+                let tarefas = carregarTarefas();
+                tarefas = tarefas.filter(t => t.id !== id);
+                salvarTarefas(tarefas);
+                const datasSemana = getDatasDaSemana();
+                viewContainer.innerHTML = renderVisaoSemanal(tarefas, datasSemana);
+                configurarEventosCalendario(app, viewContainer);
+            }
+        });
+    });
+}
+
+function iniciarDragAndDrop(container) {
+    const elementosDia = container.querySelectorAll('.day-row, .empty-day-drop-horizontal');
+    elementosDia.forEach(elem => {
+        elem.addEventListener("dragover", e => {
+            e.preventDefault();
+            elem.classList.add('drag-over');
+        });
+
+        elem.addEventListener("dragleave", () => {
+            elem.classList.remove('drag-over');
+        });
+
+        elem.addEventListener("drop", e => {
+            e.preventDefault();
+            elem.classList.remove('drag-over');
+            const id = e.dataTransfer.getData("text/plain");
+            const novoDia = elem.dataset.day;
+
+            if (id && novoDia) {
+                moverTarefaParaDia(id, novoDia);
+                window.dispatchEvent(new HashChangeEvent('hashchange'));
+            }
+        });
+    });
+
+    const cards = container.querySelectorAll('.calendar-task-horizontal');
     cards.forEach(card => {
         card.addEventListener("dragstart", e => {
             e.dataTransfer.setData("text/plain", card.dataset.id);

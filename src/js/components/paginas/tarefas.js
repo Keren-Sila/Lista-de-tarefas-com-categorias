@@ -15,23 +15,22 @@ async function tarefas(app) {
                     <h1>📋 Lista de Tarefas</h1>
                     <p class="subtitle">Organize, filtre e gerencie suas atividades em tempo real.</p>
                 </div>
-                <button id="btnNovaTarefaMain" class="btn-primary">➕ Nova Tarefa</button>
             </div>
 
             <!-- Busca e Filtros Clean -->
             <div class="search-and-filters card glass">
                 <div class="search-box">
                     <span class="search-icon">🔍</span>
-                    <input id="buscarTarefa" type="text" placeholder="Buscar tarefas por título ou descrição..." class="input-clean">
+                    <input id="buscarTarefa" type="text" placeholder="Buscar tarefas por título ou descrição..." class="input-clean" data-tooltip="Digite para filtrar instantaneamente">
                 </div>
 
                 <div class="filter-pills-container">
-                    <button class="filter-pill active" data-filter="todas">Todas (${todasAsTarefas.length})</button>
-                    <button class="filter-pill" data-filter="hoje">Hoje</button>
-                    <button class="filter-pill" data-filter="semana">Esta Semana</button>
-                    <button class="filter-pill" data-filter="urgente">🔴 Urgentes</button>
-                    <button class="filter-pill" data-filter="alta">🟠 Altas</button>
-                    ${categorias.map(c => `<button class="filter-pill" data-filter="cat_${c.nome}">${c.icone || '🏷️'} ${c.nome}</button>`).join('')}
+                    <button class="filter-pill active" data-filter="todas" data-tooltip="Exibir todas as tarefas">Todas (${todasAsTarefas.length})</button>
+                    <button class="filter-pill" data-filter="hoje" data-tooltip="Tarefas agendadas para hoje">Hoje</button>
+                    <button class="filter-pill" data-filter="semana" data-tooltip="Tarefas desta semana">Esta Semana</button>
+                    <button class="filter-pill" data-filter="urgente" data-tooltip="Filtrar por prioridade urgente">🔴 Urgentes</button>
+                    <button class="filter-pill" data-filter="alta" data-tooltip="Filtrar por prioridade alta">🟠 Altas</button>
+                    ${categorias.map(c => `<button class="filter-pill" data-filter="cat_${c.nome}" data-tooltip="Filtrar por ${c.nome}">${c.icone || '🏷️'} ${c.nome}</button>`).join('')}
                 </div>
             </div>
 
@@ -159,17 +158,20 @@ async function tarefas(app) {
         }
     }
 
-    // Busca e Filtros
+    // Busca e Filtros Instantâneos
     const buscaInput = app.querySelector("#buscarTarefa");
-    buscaInput.addEventListener("input", () => {
-        const texto = buscaInput.value.toLowerCase();
-        const filtradas = todasAsTarefas.filter(t =>
-            t.titulo.toLowerCase().includes(texto) ||
-            (t.descricao && t.descricao.toLowerCase().includes(texto)) ||
-            (t.categoria && t.categoria.toLowerCase().includes(texto))
-        );
-        renderizarLista(filtradas);
-    });
+    if (buscaInput) {
+        buscaInput.addEventListener("input", () => {
+            todasAsTarefas = carregarTarefas();
+            const texto = buscaInput.value.toLowerCase().trim();
+            const filtradas = todasAsTarefas.filter(t =>
+                t.titulo.toLowerCase().includes(texto) ||
+                (t.descricao && t.descricao.toLowerCase().includes(texto)) ||
+                (t.categoria && t.categoria.toLowerCase().includes(texto))
+            );
+            renderizarLista(filtradas);
+        });
+    }
 
     const filterPills = app.querySelectorAll('.filter-pill');
     filterPills.forEach(pill => {
@@ -178,6 +180,7 @@ async function tarefas(app) {
             pill.classList.add('active');
             const filterType = pill.dataset.filter;
             const hojeStr = obterHojeISO();
+            todasAsTarefas = carregarTarefas();
 
             let tarefasFiltradas = todasAsTarefas;
 
@@ -210,12 +213,14 @@ async function tarefas(app) {
     });
 
     const btnNova = app.querySelector('#btnNovaTarefaMain');
-    btnNova.addEventListener('click', () => {
-        abrirModalTarefa(null, () => {
-            todasAsTarefas = carregarTarefas();
-            renderizarLista(todasAsTarefas);
+    if (btnNova) {
+        btnNova.addEventListener('click', () => {
+            abrirModalTarefa(null, () => {
+                todasAsTarefas = carregarTarefas();
+                renderizarLista(todasAsTarefas);
+            });
         });
-    });
+    }
 
     renderizarLista(todasAsTarefas);
 }
@@ -231,7 +236,7 @@ function cardTarefaHTML(t) {
     return `
         <article class="task-card card glass priority-border-${t.prioridade} ${t.concluida ? 'completed' : ''}" data-id="${t.id}">
             <div class="task-card-header">
-                <label class="custom-checkbox" title="Marcar como concluída">
+                <label class="custom-checkbox" data-tooltip="Marcar ou desmarcar conclusão">
                     <input type="checkbox" class="task-checkbox" ${t.concluida ? "checked" : ""}>
                     <span class="checkmark"></span>
                 </label>
@@ -239,8 +244,8 @@ function cardTarefaHTML(t) {
                 <h3 class="task-title">${t.titulo}</h3>
 
                 <div class="task-card-menu-actions">
-                    <button class="btn-icon btn-edit-task" title="Editar tarefa">✏️</button>
-                    <button class="btn-icon btn-delete-task" title="Excluir tarefa">🗑️</button>
+                    <button class="btn-icon btn-edit-task" data-tooltip="Editar detalhes da tarefa">✏️</button>
+                    <button class="btn-icon btn-delete-task" data-tooltip="Excluir esta tarefa">🗑️</button>
                 </div>
             </div>
 
@@ -259,14 +264,14 @@ function cardTarefaHTML(t) {
 
                 <div class="task-action-dropdowns">
                     <div class="calendar-export-wrapper">
-                        <button class="btn-secondary btn-sm btn-calendar">📅 Calendário ▾</button>
+                        <button class="btn-secondary btn-sm btn-calendar" data-tooltip="Exportar para seu aplicativo de agenda">📅 Calendário ▾</button>
                         <div class="calendar-menu">
                             <button data-provider="google">Google Calendar</button>
                             <button data-provider="outlook">Outlook</button>
                             <button data-provider="ics">Apple / Teams (.ics)</button>
                         </div>
                     </div>
-                    <button class="btn-secondary btn-sm btn-share" title="Compartilhar">📤 Share</button>
+                    <button class="btn-secondary btn-sm btn-share" data-tooltip="Compartilhar tarefa">📤 Share</button>
                 </div>
             </div>
         </article>

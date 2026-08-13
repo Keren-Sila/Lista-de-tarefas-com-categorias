@@ -1,45 +1,57 @@
 /* ==========================================================================
    Microframework Base - TaskFlow Design System
-   Paleta Clean & Neutra (Slate, Indigo, Emerald)
+   Estética Dark Glassmorphic inspirada no Portfólio (Slate, Purple, Indigo, Cyan Glow)
    ========================================================================== */
 
 :root {
     /* Cores de Fundo & Superfície */
-    --bg-main: #E8EEF6;
-    --bg-card: #F8FAFC;
-    --bg-glass: rgba(248, 250, 252, 0.88);
+    --bg-main: #0B0F19;
+    --bg-card: rgba(17, 24, 39, 0.75);
+    --bg-card-hover: rgba(30, 41, 59, 0.85);
+    --bg-glass: rgba(15, 23, 42, 0.75);
+    --bg-glass-solid: rgba(15, 23, 42, 0.95);
 
     /* Tipografia */
-    --text-primary: #111C2E;
-    --text-secondary: #52647A;
-    --text-muted: #718198;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
 
-    /* Acentos Principais */
-    --primary: #4F46E5;
-    --primary-hover: #4338CA;
-    --primary-light: #EEF2FF;
+    /* Acentos Principais Inspirados no Portfólio */
+    --primary: #7C3AED;
+    --primary-hover: #6D28D9;
+    --primary-glow: rgba(124, 58, 237, 0.4);
+    --primary-light: rgba(124, 58, 237, 0.15);
+
     --secondary-blue: #0284C7;
+    --accent-cyan: #06B6D4;
+    --accent-purple: #A855F7;
+    
     --success: #10B981;
-    --success-light: #D1FAE5;
+    --success-light: rgba(16, 185, 129, 0.15);
 
-    /* Prioridades Soft UI */
-    --priority-baixa-bg: #F1F5F9;
-    --priority-baixa-text: #475569;
+    /* Prioridades Dark Glow */
+    --priority-baixa-bg: rgba(71, 85, 105, 0.25);
+    --priority-baixa-text: #94A3B8;
+    --priority-baixa-border: rgba(148, 163, 184, 0.3);
 
-    --priority-media-bg: #FEF3C7;
-    --priority-media-text: #D97706;
+    --priority-media-bg: rgba(217, 119, 6, 0.2);
+    --priority-media-text: #FBBF24;
+    --priority-media-border: rgba(251, 191, 36, 0.4);
 
-    --priority-alta-bg: #FFEDD5;
-    --priority-alta-text: #EA580C;
+    --priority-alta-bg: rgba(234, 88, 12, 0.25);
+    --priority-alta-text: #FB923C;
+    --priority-alta-border: rgba(251, 146, 60, 0.4);
 
-    --priority-urgente-bg: #FEE2E2;
-    --priority-urgente-text: #DC2626;
+    --priority-urgente-bg: rgba(220, 38, 38, 0.25);
+    --priority-urgente-text: #FCA5A5;
+    --priority-urgente-border: rgba(248, 113, 113, 0.5);
 
     /* Bordas & Sombras */
-    --border-color: #C9D4E2;
-    --border-radius: 12px;
-    --shadow-subtle: 0 8px 24px rgba(15, 23, 42, 0.08);
-    --shadow-floating: 0 18px 36px rgba(15, 23, 42, 0.14);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-glow: rgba(124, 58, 237, 0.3);
+    --border-radius: 14px;
+    --shadow-subtle: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --shadow-floating: 0 20px 40px -15px rgba(124, 58, 237, 0.25);
 
     /* Transições */
     --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -52,54 +64,125 @@
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: radial-gradient(circle at top left, #F5F7FB 0%, var(--bg-main) 42%, #DCE5F0 100%);
+    font-family: 'Poppins', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
     color: var(--text-primary);
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    padding-bottom: 70px; /* Espaço para a navbar mobile */
+    padding-bottom: 80px; /* Espaço para a navbar mobile */
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Background Ambient Shapes & Grid Overlay Inspirados no Portfólio */
+.hero-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.35;
+    animation: floatAnimation 12s infinite alternate ease-in-out;
+}
+
+.shape-1 {
+    top: -10%;
+    left: -10%;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, #7C3AED 0%, #4338CA 100%);
+}
+
+.shape-2 {
+    bottom: -15%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #06B6D4 0%, #3B82F6 100%);
+}
+
+.shape-3 {
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, #EC4899 0%, #8B5CF6 100%);
+    opacity: 0.2;
+}
+
+.grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+}
+
+@keyframes floatAnimation {
+    0% { transform: translateY(0) rotate(0deg) scale(1); }
+    50% { transform: translateY(-30px) rotate(10deg) scale(1.05); }
+    100% { transform: translateY(30px) rotate(-10deg) scale(0.95); }
 }
 
 a {
-    color: var(--primary);
+    color: var(--accent-cyan);
     text-decoration: none;
     transition: var(--transition);
 }
 
 a:hover {
-    color: var(--primary-hover);
+    color: var(--primary);
 }
 
 /* Glassmorphism Efeito Flutuante */
 .glass {
     background: var(--bg-glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(201, 212, 226, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
 }
 
 /* Container de Cards */
 .card {
-    background-color: var(--bg-card);
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-subtle);
-    padding: 1.25rem;
+    padding: 1.35rem;
     transition: var(--transition);
 }
 
 .card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-glow);
     box-shadow: var(--shadow-floating);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
 }
 
 /* Animações */
 .page-enter {
-    animation: fadeIn 0.35s ease-out forwards;
+    animation: fadeIn 0.4s ease-out forwards;
 }
 
 .fade-up {
-    animation: fadeUp 0.4s ease-out forwards;
+    animation: fadeUp 0.45s ease-out forwards;
 }
 
 @keyframes fadeIn {
@@ -108,17 +191,17 @@ a:hover {
 }
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Botões Globais */
+/* Botões Globais Inspirados no Portfólio */
 .btn-primary {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, #6366F1 100%);
     color: #FFFFFF;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
-    padding: 0.65rem 1.25rem;
+    padding: 0.7rem 1.4rem;
     font-weight: 600;
     font-size: 0.9rem;
     cursor: pointer;
@@ -127,21 +210,21 @@ a:hover {
     justify-content: center;
     gap: 0.5rem;
     transition: var(--transition);
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    background: linear-gradient(135deg, #6D28D9 0%, #4F46E5 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.45);
 }
 
 .btn-secondary {
-    background-color: #FFFFFF;
+    background: rgba(30, 41, 59, 0.7);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    padding: 0.65rem 1.25rem;
+    padding: 0.7rem 1.4rem;
     font-weight: 500;
     font-size: 0.9rem;
     cursor: pointer;
@@ -153,13 +236,14 @@ a:hover {
 }
 
 .btn-secondary:hover {
-    background-color: #F1F5F9;
-    border-color: #CBD5E1;
-    color: var(--text-primary);
+    background: rgba(51, 65, 85, 0.9);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+    transform: translateY(-1px);
 }
 
 .btn-sm {
-    padding: 0.4rem 0.85rem;
+    padding: 0.45rem 0.9rem;
     font-size: 0.825rem;
     border-radius: 8px;
 }
@@ -171,83 +255,153 @@ a:hover {
 .btn-icon {
     background: none;
     border: none;
+    color: var(--text-secondary);
     font-size: 1.1rem;
     cursor: pointer;
-    padding: 0.3rem;
-    border-radius: 6px;
+    padding: 0.35rem;
+    border-radius: 8px;
     transition: var(--transition);
 }
 
 .btn-icon:hover {
-    background-color: #F1F5F9;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
 }
 
-/* Pills de Prioridade Soft UI */
+/* Pills de Prioridade Neon Dark Clean (Sem borrado quadrado) */
 .priority-pill {
-    padding: 0.25rem 0.65rem;
+    padding: 0.2rem 0.65rem;
     border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.35rem;
+    border: 1px solid transparent;
+    line-height: 1.2;
+    white-space: nowrap;
+    box-shadow: none !important;
 }
 
 .priority-pill-baixa {
-    background-color: var(--priority-baixa-bg);
-    color: var(--priority-baixa-text);
+    background-color: rgba(71, 85, 105, 0.2);
+    color: #94A3B8;
+    border-color: rgba(148, 163, 184, 0.3);
 }
 
 .priority-pill-media {
-    background-color: var(--priority-media-bg);
-    color: var(--priority-media-text);
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #FBBF24;
+    border-color: rgba(251, 191, 36, 0.35);
 }
 
 .priority-pill-alta {
-    background-color: var(--priority-alta-bg);
-    color: var(--priority-alta-text);
+    background-color: rgba(249, 115, 22, 0.15);
+    color: #FB923C;
+    border-color: rgba(251, 146, 60, 0.35);
 }
 
 .priority-pill-urgente {
-    background-color: var(--priority-urgente-bg);
-    color: var(--priority-urgente-text);
+    background-color: rgba(239, 68, 68, 0.18);
+    color: #F87171;
+    border-color: rgba(248, 113, 113, 0.4);
 }
 
 /* Badges de Provedor de Reunião */
 .badge-provider {
-    padding: 0.2rem 0.55rem;
+    padding: 0.25rem 0.6rem;
     border-radius: 6px;
     font-size: 0.75rem;
     font-weight: 600;
 }
 
 .provider-teams {
-    background-color: #EDEBE9;
-    color: #464775;
-    border: 1px solid #C8C6C4;
+    background-color: rgba(98, 100, 167, 0.25);
+    color: #A6A8F2;
+    border: 1px solid rgba(166, 168, 242, 0.4);
 }
 
 .provider-meet {
-    background-color: #E6F4EA;
-    color: #137333;
-    border: 1px solid #CEEAD6;
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34D399;
+    border: 1px solid rgba(52, 211, 153, 0.4);
 }
 
 .provider-zoom {
-    background-color: #E8F1FF;
-    color: #0E71EB;
-    border: 1px solid #BA9BFF;
+    background-color: rgba(14, 113, 235, 0.25);
+    color: #60A5FA;
+    border: 1px solid rgba(96, 165, 250, 0.4);
 }
 
-/* Inputs & Form Element Clean */
+/* Status Badge Pulsante (Dot Pulsante Inspirado no Portfólio) */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    background: rgba(124, 58, 237, 0.15);
+    border: 1px solid rgba(124, 58, 237, 0.35);
+    color: #C084FC;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10B981;
+    box-shadow: 0 0 10px #10B981;
+    animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Tooltip Elegante Grafite com Texto Branco */
+[data-tooltip] {
+    position: relative;
+    cursor: pointer;
+}
+
+[data-tooltip]::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background-color: #1E293B;
+    color: #F8FAFC;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+}
+
+[data-tooltip]:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Inputs & Form Elements Clean com Focus-Ring Animado */
 .input-clean {
     width: 100%;
-    padding: 0.7rem 0.9rem;
+    padding: 0.75rem 1rem;
     border-radius: 10px;
-    border: 1px solid var(--border-color);
-    background-color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background-color: rgba(15, 23, 42, 0.6);
     color: var(--text-primary);
     font-size: 0.9rem;
     outline: none;
@@ -256,7 +410,8 @@ a:hover {
 
 .input-clean:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    background-color: rgba(15, 23, 42, 0.9);
 }
 
 /* Checkbox Animado Customizado */
@@ -282,8 +437,8 @@ a:hover {
     left: 0;
     height: 20px;
     width: 20px;
-    background-color: #FFFFFF;
-    border: 2px solid #CBD5E1;
+    background-color: rgba(15, 23, 42, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     border-radius: 6px;
     transition: var(--transition);
 }
@@ -295,6 +450,7 @@ a:hover {
 .custom-checkbox input:checked ~ .checkmark {
     background-color: var(--success);
     border-color: var(--success);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
 }
 
 .checkmark:after {
@@ -317,11 +473,11 @@ a:hover {
     transform: rotate(45deg);
 }
 
-/* Progress Bar Generica */
+/* Progress Bar Generica Iluminada */
 .progress-bar-container {
     width: 100%;
     height: 8px;
-    background-color: #E2E8F0;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 9999px;
     overflow: hidden;
     margin-top: 0.5rem;
@@ -329,22 +485,24 @@ a:hover {
 
 .progress-bar-fill {
     height: 100%;
-    background-color: var(--primary);
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent-cyan) 100%);
     border-radius: 9999px;
     transition: width 0.4s ease;
+    box-shadow: 0 0 10px var(--primary-glow);
 }
 
-/* Banner Offline First */
+/* Banner Offline First Discreto */
 .offline-banner-notice {
     position: sticky;
     top: 0;
     z-index: 1000;
-    background-color: #FEF3C7;
-    color: #92400E;
-    border-bottom: 1px solid #FCD34D;
-    padding: 0.5rem 1rem;
+    background: rgba(30, 41, 59, 0.95);
+    color: #FBBF24;
+    border-bottom: 1px solid rgba(251, 191, 36, 0.3);
+    backdrop-filter: blur(10px);
+    padding: 0.6rem 1rem;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: center;

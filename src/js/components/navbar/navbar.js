@@ -9,6 +9,11 @@ export default function navbar(item_menu) {
 
     if (!navbarContainer) return;
 
+    if (mobileTabsContainer) {
+        mobileTabsContainer.innerHTML = '';
+        mobileTabsContainer.style.display = 'none';
+    }
+
     // --- Desktop Navbar ---
     const navLinksHTML = item_menu
         .filter(item => item.url !== '#login' && item.url !== '#perfil')
@@ -23,7 +28,7 @@ export default function navbar(item_menu) {
 
     navbarContainer.innerHTML = `
         <nav class="navbar glass">
-            <a href="#dashboard" class="navbar-brand">
+            <a href="#dashboard" class="navbar-brand" data-tooltip="Painel Principal TaskFlow">
                 ⚡ Task<span>Flow</span>
             </a>
 
@@ -32,11 +37,11 @@ export default function navbar(item_menu) {
             </ul>
 
             <div class="navbar-right-actions">
-                <button id="btnNavNovaTarefa" class="btn-primary btn-sm btn-nav-new">
+                <button id="btnNavNovaTarefa" class="btn-primary btn-sm btn-nav-new" data-tooltip="Criar nova tarefa rapidamente">
                     ➕ Nova Tarefa
                 </button>
 
-                <a href="#perfil" class="navbar-user-badge" id="navbarUserBadge">
+                <a href="#perfil" class="navbar-user-badge" id="navbarUserBadge" data-tooltip="Ver e editar meu perfil">
                     <img src="${u.avatar || avatarPadrao}" alt="${u.nome}" class="navbar-avatar">
                     <span class="navbar-username">${u.nome.split(' ')[0]}</span>
                 </a>
@@ -53,19 +58,19 @@ export default function navbar(item_menu) {
     // --- Mobile Bottom Navigation Bar ---
     if (mobileTabsContainer) {
         mobileTabsContainer.innerHTML = `
-            <a href="#dashboard" class="mobile-tab">
+            <a href="#dashboard" class="mobile-tab" data-tooltip="Home">
                 <span class="icon">🏠</span>
                 <span>Home</span>
             </a>
-            <a href="#calendario" class="mobile-tab">
+            <a href="#calendario" class="mobile-tab" data-tooltip="Calendário">
                 <span class="icon">📅</span>
                 <span>Calendário</span>
             </a>
-            <a href="#categorias" class="mobile-tab">
+            <a href="#categorias" class="mobile-tab" data-tooltip="Categorias">
                 <span class="icon">🏷️</span>
                 <span>Categorias</span>
             </a>
-            <a href="#perfil" class="mobile-tab">
+            <a href="#perfil" class="mobile-tab" data-tooltip="Meu Perfil">
                 <span class="icon">👤</span>
                 <span>Perfil</span>
             </a>
@@ -79,6 +84,7 @@ export default function navbar(item_menu) {
         fab.id = 'btnMobileFAB';
         fab.className = 'mobile-fab-btn';
         fab.innerHTML = '➕';
+        fab.setAttribute('data-tooltip', 'Nova Tarefa');
         fab.title = 'Criar Nova Tarefa';
         fab.addEventListener('click', () => abrirModalTarefa());
         document.body.appendChild(fab);

@@ -82,16 +82,30 @@ function configurarBannerOffline() {
     atualizarStatusConexao();
 }
 let installEvent;
+
+function mostrarBotaoInstalacao() {
+    const navActions = document.querySelector('.navbar-right-actions');
+    if (!navActions) return;
+
+    let btnInstall = document.getElementById('btnInstalarApp');
+    if (!btnInstall) {
+        btnInstall = document.createElement('button');
+        btnInstall.id = 'btnInstalarApp';
+        btnInstall.className = 'btn-secondary btn-sm btn-nav-install';
+        btnInstall.type = 'button';
+        btnInstall.innerHTML = '📲 Instalar';
+        btnInstall.addEventListener('click', async () => {
+            if (!installEvent) return;
+            await installEvent.prompt();
+            installEvent = null;
+            btnInstall.remove();
+        });
+        navActions.appendChild(btnInstall);
+    }
+}
+
 window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
     installEvent = event;
-    const slot = document.getElementById('pwa-install-slot');
-    if (slot) {
-        slot.innerHTML = '<button id="btnInstalarApp" class="pwa-install">📲 Instalar aplicativo</button>';
-        slot.querySelector('#btnInstalarApp').addEventListener('click', async () => {
-            await installEvent.prompt();
-            installEvent = null;
-            slot.innerHTML = '';
-        });
-    }
+    mostrarBotaoInstalacao();
 });

@@ -50,11 +50,14 @@ async function dashboard(app) {
             <!-- Banner Hero de Saudação e Produtividade -->
             <div class="dashboard-hero glass">
                 <div class="hero-text">
+                    <div class="badge-status mb-2">
+                        <span class="badge-dot"></span> Modo Produtivo Ativo
+                    </div>
                     <h1>${saudacao()}, ${usuario.nome.split(' ')[0]} 👋</h1>
                     <p>${dataExtensa.charAt(0).toUpperCase() + dataExtensa.slice(1)}<br><strong>Você concluiu ${progressoSemana}% das tarefas desta semana.</strong></p>
                 </div>
 
-                <div class="productivity-widget card">
+                <div class="productivity-widget card" data-tooltip="Seu progresso acumulado">
                     <div class="widget-info">
                         <span class="widget-title">Widget de Produtividade</span>
                         <h3 class="widget-stat">${stats.concluidas} de ${stats.total} tarefas concluídas (${stats.progresso}%)</h3>
@@ -65,12 +68,27 @@ async function dashboard(app) {
                 </div>
 
                 <div class="quick-actions-bar">
-                    <button id="btnDashboardNovaTarefa" class="btn-primary">
-                        ➕ Nova Tarefa
-                    </button>
-                    <button id="btnSincronizarCalendarios" class="btn-secondary">
+                    <button id="btnSincronizarCalendarios" class="btn-secondary" data-tooltip="Exportar eventos para seu aplicativo de calendário">
                         🔄 Sincronizar Calendários
                     </button>
+                </div>
+            </div>
+
+            <div class="dashboard-metrics">
+                <div class="metric-card">
+                    <span class="metric-label">Hoje</span>
+                    <strong>${stats.hoje}</strong>
+                    <small>tarefas no dia</small>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-label">Em andamento</span>
+                    <strong>${Math.max(stats.total - stats.concluidas, 0)}</strong>
+                    <small>pendências ativas</small>
+                </div>
+                <div class="metric-card accent">
+                    <span class="metric-label">Progresso</span>
+                    <strong>${progressoSemana}%</strong>
+                    <small>da semana concluída</small>
                 </div>
             </div>
 
@@ -211,13 +229,20 @@ async function dashboard(app) {
 }
 
 function renderMiniTask(t) {
+    const prioridadeLabels = {
+        urgente: '🔴 Urgente',
+        alta: '🟠 Alta',
+        media: '🟡 Média',
+        baixa: '⚪ Baixa'
+    };
+
     return `
         <div class="mini-task-card priority-${t.prioridade} ${t.concluida ? 'completed' : ''}">
             <div class="mini-task-main">
                 <span class="mini-task-time">${t.horario || '09:00'}</span>
                 <strong class="mini-task-title">${t.titulo}</strong>
             </div>
-            <span class="badge-priority priority-pill-${t.prioridade}">${t.prioridade}</span>
+            <span class="priority-pill priority-pill-${t.prioridade}">${prioridadeLabels[t.prioridade] || t.prioridade}</span>
         </div>
     `;
 }
