@@ -25,6 +25,13 @@ async function dashboard(app) {
     const tarefas = carregarTarefas();
     const stats = calcularEstatisticas(tarefas);
     const categorias = carregarCategorias();
+    const agora = new Date();
+    const inicioSemana = new Date(agora); inicioSemana.setHours(0, 0, 0, 0); inicioSemana.setDate(agora.getDate() - ((agora.getDay() + 6) % 7));
+    const fimSemana = new Date(inicioSemana); fimSemana.setDate(inicioSemana.getDate() + 7);
+    const tarefasSemana = tarefas.filter(t => t.data && new Date(`${t.data}T00:00:00`) >= inicioSemana && new Date(`${t.data}T00:00:00`) < fimSemana);
+    const concluidasSemana = tarefasSemana.filter(t => t.concluida).length;
+    const progressoSemana = tarefasSemana.length ? Math.round((concluidasSemana / tarefasSemana.length) * 100) : 0;
+    const dataExtensa = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
     const hojeISO = obterHojeISO();
     const tarefasHoje = tarefas.filter(t => t.data === hojeISO || !t.data);
@@ -44,7 +51,7 @@ async function dashboard(app) {
             <div class="dashboard-hero glass">
                 <div class="hero-text">
                     <h1>${saudacao()}, ${usuario.nome.split(' ')[0]} 👋</h1>
-                    <p>Aqui está o resumo da sua produtividade e compromissos de hoje.</p>
+                    <p>${dataExtensa.charAt(0).toUpperCase() + dataExtensa.slice(1)}<br><strong>Você concluiu ${progressoSemana}% das tarefas desta semana.</strong></p>
                 </div>
 
                 <div class="productivity-widget card">
@@ -53,7 +60,7 @@ async function dashboard(app) {
                         <h3 class="widget-stat">${stats.concluidas} de ${stats.total} tarefas concluídas (${stats.progresso}%)</h3>
                     </div>
                     <div class="progress-bar-container">
-                        <div class="progress-bar-fill" style="width: ${stats.progresso}%;"></div>
+                        <div class="progress-bar-fill" style="width: ${progressoSemana}%;"></div>
                     </div>
                 </div>
 
@@ -130,7 +137,7 @@ async function dashboard(app) {
                                 <p class="meeting-desc">${r.descricao || 'Sem descrição'}</p>
 
                                 <div class="meeting-footer">
-                                    <span class="countdown-timer">⏳ Em breve</span>
+                                    <span class="countdown-timer" data-horario="${r.data || hojeISO}T${r.horario || '09:00'}">⏳ Calculando...</span>
                                     <a href="${r.linkReuniao || 'https://teams.microsoft.com'}" target="_blank" rel="noopener" class="btn-join-call">
                                         📞 Entrar na chamada
                                     </a>
@@ -190,6 +197,8 @@ async function dashboard(app) {
     }
 
     const btnSync = app.querySelector('#btnSincronizarCalendarios');
+    atualizarContadores(app);
+
     if (btnSync) {
         btnSync.addEventListener('click', () => {
             if (tarefasHoje.length > 0) {
@@ -218,3 +227,10 @@ export default {
     label: "Dashboard",
     pagina: dashboard
 };
+function atualizarContadores(app) {
+    const atualizar = () => app.querySelectorAll('[data-horario]').forEach(item => {
+        const quando = new Date(item.dataset.horario).getTime(); const minutos = Math.max(0, Math.ceil((quando - Date.now()) / 60000));
+        item.textContent = minutos ? `⏳ Em ${minutos} min` : '⏳ Horário da reunião';
+    });
+    atualizar(); setInterval(atualizar, 60000);
+}

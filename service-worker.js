@@ -1,4 +1,4 @@
-const CACHE = "taskflow-v4";
+const CACHE = "taskflow-v6";
 
 const ASSETS = [
     "/",
@@ -16,6 +16,7 @@ const ASSETS = [
     "/src/css/responsive.css",
     "/src/css/calendario.css",
     "/src/css/navbar-mobile.css",
+    "/src/css/premium.css",
 
     "/src/js/main.js",
     "/src/js/rotas.js",
@@ -29,12 +30,14 @@ const ASSETS = [
     "/src/js/components/services/storageStrategy.js",
     "/src/js/components/services/tarefasStorage.js",
     "/src/js/components/services/authStorage.js",
+    "/src/js/components/paginas/inicio.js",
     "/src/js/components/paginas/dashboard.js",
     "/src/js/components/paginas/tarefas.js",
     "/src/js/components/paginas/categorias.js",
     "/src/js/components/paginas/calendario.js",
     "/src/js/components/paginas/login.js",
     "/src/js/components/paginas/perfil.js",
+    "/src/js/components/paginas/relatorios.js",
 
     "/sync.js",
     "/notificacoes.js"

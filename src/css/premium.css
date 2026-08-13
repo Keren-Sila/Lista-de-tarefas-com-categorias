@@ -1,0 +1,21 @@
+/* Premium product layer */
+#navbar { position: fixed; inset: 0 auto 0 0; width: 238px; z-index: 900; }
+.navbar { height: 100vh; padding: 1.5rem 1rem; display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start; gap:2rem; border:0; border-right:1px solid rgba(148,163,184,.2); }
+.navbar-brand { padding: .4rem .7rem; color:#F8FAFC; }
+.navbar-menu { display:flex; flex-direction:column; gap:.35rem; width:100%; }
+.navbar-item { list-style:none; width:100%; }
+.navbar-link { display:block; padding:.7rem .8rem; border-radius:10px; color:#CBD5E1; }
+.navbar-link::before { content:'•'; color:#818CF8; padding-right:.7rem; font-weight:800; }
+.navbar-link.active { color:#FFF; background:rgba(129,140,248,.2); }
+.navbar-right-actions { margin-top:auto; flex-direction:column; align-items:stretch; }
+.navbar-user-badge { justify-content:center; color:#FFF; }
+#app { margin-left:238px; min-height:100vh; }
+.landing { min-height:100vh; display:grid; grid-template-columns:1.05fr .95fr; gap:4rem; align-items:center; max-width:1180px; padding:4rem 2rem; margin:auto; }
+.landing-eyebrow,.reports-head>span { font-size:.75rem; font-weight:800; letter-spacing:.12em; color:#2563EB; }
+.landing h1 { font-size:clamp(2.8rem,6vw,5rem); line-height:1.03; letter-spacing:-.06em; margin:.7rem 0 1.25rem; color:#0F172A; }
+.landing-copy>p { max-width:520px; color:#52647A; font-size:1.1rem; }
+.landing-actions { display:flex; gap:.75rem; margin:2rem 0; }.landing-trust { display:flex; flex-wrap:wrap; gap:1rem; color:#52647A; font-size:.85rem; }
+.landing-preview { padding:1.5rem; background:linear-gradient(145deg,#fff,#EEF4FF); box-shadow:0 24px 60px rgba(15,23,42,.16); }.preview-top{display:flex;justify-content:space-between;color:#52647A;font-size:.8rem}.online-dot{color:#10B981}.landing-preview h2{font-size:1.65rem;margin:1.5rem 0}.preview-progress{background:#EFF6FF;padding:1rem;border-radius:12px}.preview-progress strong{float:right;color:#2563EB}.preview-progress div,.report-row div{height:8px;background:#DCE5F0;border-radius:999px;margin-top:.6rem;overflow:hidden}.preview-progress i,.report-row i{display:block;height:100%;background:#2563EB;border-radius:999px}.preview-task{display:grid;grid-template-columns:50px 1fr auto;gap:.6rem;align-items:center;padding:1rem 0;border-bottom:1px solid var(--border-color);font-size:.9rem}.preview-task b{color:#2563EB}.preview-task em{font-style:normal;font-size:.72rem;background:#E0E7FF;padding:.2rem .45rem;border-radius:999px;color:#3730A3}
+.reports{max-width:1120px;margin:auto;padding:3rem 2rem}.reports-head h1{font-size:2.2rem;letter-spacing:-.04em}.reports-head p{color:var(--text-secondary)}.report-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}.report-kpis small,.report-kpis span{display:block;color:var(--text-secondary)}.report-kpis strong{font-size:2.15rem;display:block;margin:.4rem 0}.report-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:1rem}.report-layout h2{font-size:1rem}.report-chart{text-align:center}.donut{width:170px;height:170px;border-radius:50%;margin:1.5rem auto;background:conic-gradient(#2563EB var(--progress),#E2E8F0 0);display:grid;place-items:center}.donut:before{content:'';position:absolute;width:132px;height:132px;border-radius:50%;background:var(--bg-card)}.donut b{position:relative;font-size:1.7rem}.report-row{display:grid;grid-template-columns:1fr auto;gap:.5rem;margin:1rem 0}.report-row div{grid-column:1/-1}
+@media(max-width:768px){#navbar{position:sticky;width:auto;inset:0;height:64px}.navbar{height:64px;padding:.85rem 1rem;display:flex;flex-direction:row;align-items:center}.navbar-brand{padding:0}.navbar-menu,.navbar-right-actions{display:none}#app{margin-left:0}.landing{grid-template-columns:1fr;padding:2rem 1rem;gap:2rem}.landing h1{font-size:3rem}.report-kpis,.report-layout{grid-template-columns:1fr}.reports{padding:2rem 1rem}}
+.pwa-install{position:fixed;right:1.5rem;bottom:1.5rem;z-index:1000;border:0;border-radius:999px;padding:.8rem 1.1rem;background:#2563EB;color:white;font-weight:700;box-shadow:0 12px 28px rgba(37,99,235,.32);cursor:pointer}

@@ -1,0 +1,9 @@
+import { carregarTarefas, carregarCategorias } from '../services/tarefasStorage.js';
+
+async function relatorios(app) {
+    const tarefas = carregarTarefas(); const categorias = carregarCategorias();
+    const total = tarefas.length || 1; const concluidas = tarefas.filter(t => t.concluida).length; const percentual = Math.round(concluidas / total * 100);
+    const porCategoria = categorias.map(c => ({ ...c, total: tarefas.filter(t => t.categoria === c.nome).length, feitas: tarefas.filter(t => t.categoria === c.nome && t.concluida).length }));
+    app.innerHTML = `<section class="reports page-enter"><div class="reports-head"><span>ANÁLISE PESSOAL</span><h1>Relatórios de produtividade</h1><p>Uma visão simples do seu ritmo e das suas prioridades.</p></div><div class="report-kpis"><article class="card"><small>Concluídas</small><strong>${concluidas}</strong><span>tarefas finalizadas</span></article><article class="card"><small>Taxa de conclusão</small><strong>${percentual}%</strong><span>do seu planejamento</span></article><article class="card"><small>Em aberto</small><strong>${tarefas.length - concluidas}</strong><span>tarefas para avançar</span></article></div><div class="report-layout"><article class="card report-chart"><h2>Progresso geral</h2><div class="donut" style="--progress:${percentual}%"><b>${percentual}%</b></div><p>Você concluiu ${concluidas} de ${tarefas.length} tarefas cadastradas.</p></article><article class="card category-report"><h2>Por categoria</h2>${porCategoria.map(c => { const p=c.total ? Math.round(c.feitas/c.total*100):0; return `<div class="report-row"><span>${c.icone} ${c.nome}</span><b>${p}%</b><div><i style="width:${p}%;background:${c.cor}"></i></div></div>`; }).join('')}</article></div></section>`;
+}
+export default { url: '#relatorios', label: 'Relatórios', pagina: relatorios };

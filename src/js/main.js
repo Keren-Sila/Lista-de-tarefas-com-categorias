@@ -17,12 +17,12 @@ for (const rota of roteador) {
 }
 
 // Passo 4: descobrir onde estamos e renderizar pela primeira vez
-let hash = window.location.hash || '#dashboard';
+let hash = window.location.hash || '#inicio';
 render();
 
 // Passo 5: escutar a navegação via evento hashchange
 window.addEventListener("hashchange", () => {
-    hash = window.location.hash || '#dashboard';
+    hash = window.location.hash || '#inicio';
     render();
 });
 
@@ -81,3 +81,17 @@ function configurarBannerOffline() {
     window.addEventListener('offline', atualizarStatusConexao);
     atualizarStatusConexao();
 }
+let installEvent;
+window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    installEvent = event;
+    const slot = document.getElementById('pwa-install-slot');
+    if (slot) {
+        slot.innerHTML = '<button id="btnInstalarApp" class="pwa-install">📲 Instalar aplicativo</button>';
+        slot.querySelector('#btnInstalarApp').addEventListener('click', async () => {
+            await installEvent.prompt();
+            installEvent = null;
+            slot.innerHTML = '';
+        });
+    }
+});

@@ -14,17 +14,17 @@
     justify-content: space-between;
     padding: 0.85rem 2rem;
     height: 64px;
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(15, 23, 42, 0.94);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.03);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
 }
 
 .navbar-brand {
     font-size: 1.3rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #F8FAFC;
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -43,7 +43,7 @@
 }
 
 .navbar-link {
-    color: var(--text-secondary);
+    color: #CBD5E1;
     font-weight: 500;
     font-size: 0.9rem;
     padding: 0.4rem 0.75rem;
@@ -53,12 +53,12 @@
 
 .navbar-link:hover {
     color: var(--primary);
-    background-color: var(--primary-light);
+    background-color: rgba(129, 140, 248, 0.16);
 }
 
 .navbar-link.active {
     color: var(--primary);
-    background-color: var(--primary-light);
+    background-color: rgba(129, 140, 248, 0.16);
     font-weight: 600;
 }
 
@@ -79,7 +79,7 @@
     padding: 0.3rem 0.6rem;
     border-radius: 9999px;
     border: 1px solid var(--border-color);
-    background-color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.1);
     transition: var(--transition);
 }
 
@@ -98,5 +98,5 @@
 .navbar-username {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: #F8FAFC;
 }

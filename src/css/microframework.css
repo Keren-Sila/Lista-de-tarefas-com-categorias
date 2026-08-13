@@ -5,14 +5,14 @@
 
 :root {
     /* Cores de Fundo & Superfície */
-    --bg-main: #F8FAFC;
-    --bg-card: #FFFFFF;
-    --bg-glass: rgba(255, 255, 255, 0.85);
+    --bg-main: #E8EEF6;
+    --bg-card: #F8FAFC;
+    --bg-glass: rgba(248, 250, 252, 0.88);
 
     /* Tipografia */
-    --text-primary: #0F172A;
-    --text-secondary: #64748B;
-    --text-muted: #94A3B8;
+    --text-primary: #111C2E;
+    --text-secondary: #52647A;
+    --text-muted: #718198;
 
     /* Acentos Principais */
     --primary: #4F46E5;
@@ -36,10 +36,10 @@
     --priority-urgente-text: #DC2626;
 
     /* Bordas & Sombras */
-    --border-color: #E2E8F0;
+    --border-color: #C9D4E2;
     --border-radius: 12px;
-    --shadow-subtle: 0 4px 20px rgba(15, 23, 42, 0.04);
-    --shadow-floating: 0 10px 30px rgba(15, 23, 42, 0.08);
+    --shadow-subtle: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --shadow-floating: 0 18px 36px rgba(15, 23, 42, 0.14);
 
     /* Transições */
     --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -53,7 +53,7 @@
 
 body {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--bg-main);
+    background: radial-gradient(circle at top left, #F5F7FB 0%, var(--bg-main) 42%, #DCE5F0 100%);
     color: var(--text-primary);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
@@ -75,7 +75,7 @@ a:hover {
     background: var(--bg-glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    border: 1px solid rgba(201, 212, 226, 0.9);
 }
 
 /* Container de Cards */

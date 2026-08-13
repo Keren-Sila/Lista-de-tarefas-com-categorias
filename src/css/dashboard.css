@@ -18,24 +18,24 @@
     padding: 1.5rem 2rem;
     border-radius: var(--border-radius);
     margin-bottom: 2rem;
-    background: #FFFFFF;
+    background: linear-gradient(135deg, #111C2E 0%, #22395F 100%);
 }
 
 .hero-text h1 {
     font-size: 1.6rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #F8FAFC;
     margin-bottom: 0.25rem;
 }
 
 .hero-text p {
-    color: var(--text-secondary);
+    color: #C7D2E3;
     font-size: 0.95rem;
 }
 
 .productivity-widget {
     min-width: 280px;
-    background-color: var(--primary-light);
+    background-color: rgba(238, 242, 255, 0.96);
     border: 1px solid rgba(79, 70, 229, 0.2);
     padding: 1rem 1.25rem;
 }

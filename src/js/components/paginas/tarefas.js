@@ -1,6 +1,6 @@
 // src/js/components/paginas/tarefas.js
 // Capítulo 8 da Apostila: Componente auto montável recebendo o elemento app
-import { carregarTarefas, salvarTarefas, removerTarefa, carregarCategorias } from '../services/tarefasStorage.js';
+import { carregarTarefas, salvarTarefas, removerTarefa, carregarCategorias, obterHojeISO } from '../services/tarefasStorage.js';
 import { exportarParaCalendario, compartilharTarefa } from '../../../../sync.js';
 import { abrirModalTarefa } from '../modal/modalTarefa.js';
 
@@ -177,12 +177,25 @@ async function tarefas(app) {
             filterPills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
             const filterType = pill.dataset.filter;
-            const hojeStr = new Date().toISOString().split("T")[0];
+            const hojeStr = obterHojeISO();
 
             let tarefasFiltradas = todasAsTarefas;
 
             if (filterType === 'hoje') {
                 tarefasFiltradas = todasAsTarefas.filter(t => t.data === hojeStr);
+            } else if (filterType === 'semana') {
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0);
+                const inicioDaSemana = new Date(hoje);
+                inicioDaSemana.setDate(hoje.getDate() - ((hoje.getDay() + 6) % 7));
+                const fimDaSemana = new Date(inicioDaSemana);
+                fimDaSemana.setDate(inicioDaSemana.getDate() + 6);
+
+                tarefasFiltradas = todasAsTarefas.filter(t => {
+                    if (!t.data) return false;
+                    const dataDaTarefa = new Date(`${t.data}T00:00:00`);
+                    return dataDaTarefa >= inicioDaSemana && dataDaTarefa <= fimDaSemana;
+                });
             } else if (filterType === 'urgente') {
                 tarefasFiltradas = todasAsTarefas.filter(t => t.prioridade === 'urgente');
             } else if (filterType === 'alta') {
