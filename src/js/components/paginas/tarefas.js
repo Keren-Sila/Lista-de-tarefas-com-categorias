@@ -1,408 +1,263 @@
-import { carregarTarefas, salvarTarefas, addTask, removerTarefa } from '../../tarefasStorage.js';
+// src/js/components/paginas/tarefas.js
+// Capítulo 8 da Apostila: Componente auto montável recebendo o elemento app
+import { carregarTarefas, salvarTarefas, removerTarefa, carregarCategorias } from '../services/tarefasStorage.js';
 import { exportarParaCalendario, compartilharTarefa } from '../../../../sync.js';
+import { abrirModalTarefa } from '../modal/modalTarefa.js';
 
-function tarefas() {
-    const todasAsTarefas = carregarTarefas();
-    const page = document.createElement('div');
-    page.className = 'tarefas-page-wrapper page-enter';
+async function tarefas(app) {
+    let todasAsTarefas = carregarTarefas();
+    const categorias = carregarCategorias();
 
-    let filtroPrioridade = 'todas';
-    let filtroDiaSemana = 'todos';
-
-    page.innerHTML = `
-        <section class="tarefas-page">
-            <!-- HEADER CLICKUP COM CONTROLES DE FILTRO -->
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <h2 style="font-size: 1.3rem; font-weight: 800; color: #0F172A; margin: 0;">📁 Projeto 1 — Lista de Tarefas</h2>
-                    <span class="info-badge">ℹ️ Visualização ClickUp</span>
+    app.innerHTML = `
+        <section class="tarefas-page tarefas-page-wrapper page-enter">
+            <div class="tarefas-header">
+                <div>
+                    <h1>📋 Lista de Tarefas</h1>
+                    <p class="subtitle">Organize, filtre e gerencie suas atividades em tempo real.</p>
                 </div>
-                <button id="btnAbrirModalCriar" class="btn-primary">➕ Add Tarefa</button>
+                <button id="btnNovaTarefaMain" class="btn-primary">➕ Nova Tarefa</button>
             </div>
 
-            <!-- FORMULÁRIO INLINE EXPANSÍVEL -->
-            <div id="formNovaTarefaContainer" class="glass-card" style="display: none; padding: 20px; border-radius: 14px; margin-bottom: 14px; background: #FFFFFF; border: 1px solid var(--primary-color);">
-                <h3 style="color: #0F172A; margin-bottom: 12px; font-size: 1rem; font-weight: 700;">✨ Criar Nova Tarefa</h3>
-                <form id="formCriarTarefa" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Nome da Tarefa</label>
-                        <input type="text" id="novoTitulo" required placeholder="Digite o nome da tarefa..." style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Categoria</label>
-                        <select id="novaCategoria" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                            <option value="Trabalho">Trabalho</option>
-                            <option value="Faculdade">Faculdade</option>
-                            <option value="Pessoal">Pessoal</option>
-                            <option value="Reuniões">Reuniões</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Dia da Semana</label>
-                        <select id="novoDiaSemana" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                            <option value="segunda">Segunda-feira</option>
-                            <option value="terca">Terça-feira</option>
-                            <option value="quarta">Quarta-feira</option>
-                            <option value="quinta">Quinta-feira</option>
-                            <option value="sexta">Sexta-feira</option>
-                            <option value="sabado">Sábado</option>
-                            <option value="domingo">Domingo</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Prioridade</label>
-                        <select id="novaPrioridade" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                            <option value="baixa">Baixa</option>
-                            <option value="media" selected>Média</option>
-                            <option value="alta">Alta</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Data de Vencimento</label>
-                        <input type="date" id="novaData" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                    </div>
-                    <div style="grid-column: 1 / -1; display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px;">
-                        <button type="button" id="btnCancelarCriar" class="btn-secondary">Cancelar</button>
-                        <button type="submit" class="btn-primary">Salvar Tarefa</button>
-                    </div>
-                </form>
-            </div>
+            <!-- Busca e Filtros Clean -->
+            <div class="search-and-filters card glass">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input id="buscarTarefa" type="text" placeholder="Buscar tarefas por título ou descrição..." class="input-clean">
+                </div>
 
-            <div class="workspace-summary">
-                <div class="metric-card metric-blue">
-                    <span class="metric-label">Total</span>
-                    <strong id="summaryTotal">0</strong>
-                </div>
-                <div class="metric-card metric-purple">
-                    <span class="metric-label">Alta Prioridade</span>
-                    <strong id="summaryAlta">0</strong>
-                </div>
-                <div class="metric-card metric-green">
-                    <span class="metric-label">Concluídas</span>
-                    <strong id="summaryDone">0</strong>
-                </div>
-                <div class="metric-card metric-orange">
-                    <span class="metric-label">Pendente</span>
-                    <strong id="summaryPending">0</strong>
+                <div class="filter-pills-container">
+                    <button class="filter-pill active" data-filter="todas">Todas (${todasAsTarefas.length})</button>
+                    <button class="filter-pill" data-filter="hoje">Hoje</button>
+                    <button class="filter-pill" data-filter="semana">Esta Semana</button>
+                    <button class="filter-pill" data-filter="urgente">🔴 Urgentes</button>
+                    <button class="filter-pill" data-filter="alta">🟠 Altas</button>
+                    ${categorias.map(c => `<button class="filter-pill" data-filter="cat_${c.nome}">${c.icone || '🏷️'} ${c.nome}</button>`).join('')}
                 </div>
             </div>
 
-            <!-- CONTROLES DE BARRA DE BUSCA E FILTROS -->
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;" class="info-hover-box" data-tooltip="Busca rápida e filtragem inteligente por dia da semana e urgência.">
-                <input id="buscarTarefa" type="text" placeholder="🔍 Pesquisar tarefas por nome ou categoria..." style="flex: 1; min-width: 240px; background: #FFFFFF; border: 1px solid #CBD5E1; padding: 8px 14px; border-radius: 8px; color: #0F172A; font-size: 0.9rem;">
-                <div class="filters" style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button class="filter-pill active" data-filter="todas">Todas</button>
-                    <button class="filter-pill" data-filter="segunda">Segunda</button>
-                    <button class="filter-pill" data-filter="terca">Terça</button>
-                    <button class="filter-pill" data-filter="quarta">Quarta</button>
-                    <button class="filter-pill" data-filter="quinta">Quinta</button>
-                    <button class="filter-pill" data-filter="sexta">Sexta</button>
-                    <button class="filter-pill" data-filter="alta">🔥 Alta</button>
-                </div>
-            </div>
-
-            <!-- TABELA DE TAREFAS ESTILO CLICKUP WORKSPACE -->
-            <div class="clickup-table-view" style="margin-top: 8px;">
-                <!-- GRUPO: PENDENTE -->
-                <div class="status-group-header">
-                    <span>▼</span>
-                    <span class="status-badge pendente">PENDENTE</span>
-                    <span id="pendenteCount">0</span>
-                </div>
-
-                <!-- CABEÇALHO DA TABELA -->
-                <div class="table-header-row">
-                    <span>Nome</span>
-                    <span>Responsável</span>
-                    <span>Vencimento</span>
-                    <span>Prioridade</span>
-                    <span>Status</span>
-                    <span>Sincronização</span>
-                </div>
-
-                <!-- LISTA DE LINHAS DE TAREFAS -->
-                <div id="listaTarefas"></div>
-
-                <!-- LINHA INLINE PARA ADICIONAR RÁPIDO -->
-                <div class="inline-add-task-row" id="inlineAddTaskTrigger">
-                    <span style="font-size: 1.1rem; color: #6366F1;">⭕</span>
-                    <span style="font-size: 0.88rem; font-weight: 500;">Adicionar Tarefa...</span>
-                </div>
-            </div>
+            <!-- Container da Lista de Cards -->
+            <div id="listaTarefas" class="tarefas-cards-grid"></div>
         </section>
     `;
 
-    const listaContainer = page.querySelector('#listaTarefas');
-    const pendenteCount = page.querySelector('#pendenteCount');
-    const formContainer = page.querySelector('#formNovaTarefaContainer');
-    const btnAbrir = page.querySelector('#btnAbrirModalCriar');
-    const btnCancelar = page.querySelector('#btnCancelarCriar');
-    const formCriar = page.querySelector('#formCriarTarefa');
-    const inlineTrigger = page.querySelector('#inlineAddTaskTrigger');
+    const listaTarefasContainer = app.querySelector('#listaTarefas');
 
-    const toggleForm = () => {
-        formContainer.style.display = formContainer.style.display === 'none' ? 'block' : 'none';
-    };
-
-    const abrirDetalheTarefa = (tarefa) => {
-        const overlayExistente = document.querySelector('.task-modal-overlay');
-        if (overlayExistente) overlayExistente.remove();
-
-        const overlay = document.createElement('div');
-        overlay.className = 'task-modal-overlay';
-        overlay.innerHTML = `
-            <div class="task-modal-panel">
-                <div class="task-modal-header">
-                    <div>
-                        <span class="task-modal-tag">${tarefa.categoria || 'Geral'}</span>
-                        <h3>${tarefa.titulo}</h3>
-                    </div>
-                    <button class="task-modal-close" aria-label="Fechar modal">✕</button>
-                </div>
-
-                <div class="task-detail-grid">
-                    <div class="task-property">
-                        <span>Prioridade</span>
-                        <strong class="task-priority-badge ${tarefa.prioridade || 'media'}">${tarefa.prioridade || 'Média'}</strong>
-                    </div>
-                    <div class="task-property">
-                        <span>Status</span>
-                        <strong class="${tarefa.concluida ? 'task-status done' : 'task-status pending'}">${tarefa.concluida ? 'Concluída' : 'Pendente'}</strong>
-                    </div>
-                    <div class="task-property">
-                        <span>Data</span>
-                        <strong>${tarefa.data || 'Sem data'}</strong>
-                    </div>
-                    <div class="task-property">
-                        <span>Horário</span>
-                        <strong>${tarefa.horario || '14:00'}</strong>
-                    </div>
-                </div>
-
-                <div class="task-modal-body">
-                    <span class="task-section-label">Descrição</span>
-                    <p>${tarefa.descricao || 'Sem descrição adicional para esta tarefa.'}</p>
-                </div>
-
-                <div class="task-modal-actions">
-                    <button class="task-action-btn secondary" data-action="toggle-status">${tarefa.concluida ? 'Reabrir tarefa' : 'Marcar concluída'}</button>
-                    <button class="task-action-btn primary" data-action="google">📅 Enviar para Google</button>
-                    <button class="task-action-btn secondary" data-action="share">📤 Compartilhar</button>
-                </div>
-            </div>
-        `;
-
-        const closeBtn = overlay.querySelector('.task-modal-close');
-        closeBtn.addEventListener('click', () => overlay.remove());
-        overlay.addEventListener('click', (event) => {
-            if (event.target === overlay) overlay.remove();
-        });
-
-        overlay.querySelector('[data-action="toggle-status"]').addEventListener('click', () => {
-            const atuais = carregarTarefas();
-            const idx = atuais.findIndex(item => item.id === tarefa.id);
-            if (idx !== -1) {
-                atuais[idx].concluida = !atuais[idx].concluida;
-                salvarTarefas(atuais);
-                overlay.remove();
-                renderizar(carregarTarefas());
-            }
-        });
-
-        overlay.querySelector('[data-action="google"]').addEventListener('click', () => {
-            exportarParaCalendario(tarefa, 'google');
-        });
-
-        overlay.querySelector('[data-action="share"]').addEventListener('click', () => {
-            compartilharTarefa(tarefa).catch(console.error);
-        });
-
-        document.body.appendChild(overlay);
-        requestAnimationFrame(() => overlay.classList.add('visible'));
-    };
-
-    btnAbrir.addEventListener('click', toggleForm);
-    inlineTrigger.addEventListener('click', toggleForm);
-    btnCancelar.addEventListener('click', () => formContainer.style.display = 'none');
-
-    formCriar.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const nova = {
-            titulo: page.querySelector('#novoTitulo').value,
-            categoria: page.querySelector('#novaCategoria').value,
-            diaSemana: page.querySelector('#novoDiaSemana').value,
-            prioridade: page.querySelector('#novaPrioridade').value,
-            data: page.querySelector('#novaData').value || new Date().toISOString().split('T')[0],
-            horario: '14:00',
-            concluida: false,
-            descricao: `Tarefa da categoria ${page.querySelector('#novaCategoria').value}`
-        };
-        addTask(nova);
-        formContainer.style.display = 'none';
-        formCriar.reset();
-        renderizar(carregarTarefas());
-    });
-
-    function renderizar(lista) {
-        listaContainer.innerHTML = '';
-
-        let filtradas = lista;
-        if (filtroPrioridade === 'alta') {
-            filtradas = filtradas.filter(t => t.prioridade === 'alta');
-        } else if (['segunda','terca','quarta','quinta','sexta','sabado','domingo'].includes(filtroDiaSemana)) {
-            filtradas = filtradas.filter(t => t.diaSemana === filtroDiaSemana);
-        }
-
-        const pendentes = filtradas.filter(t => !t.concluida);
-        const concluidas = filtradas.filter(t => t.concluida);
-        const altaPrioridade = filtradas.filter(t => t.prioridade === 'alta' && !t.concluida);
-
-        page.querySelector('#summaryTotal').textContent = filtradas.length;
-        page.querySelector('#summaryAlta').textContent = altaPrioridade.length;
-        page.querySelector('#summaryDone').textContent = concluidas.length;
-        page.querySelector('#summaryPending').textContent = pendentes.length;
-        pendenteCount.textContent = pendentes.length;
-
-        if (filtradas.length === 0) {
-            listaContainer.innerHTML = `
-                <div style="padding: 24px; text-align: center; color: #64748B; font-size: 0.9rem;">
-                    Nenhuma tarefa encontrada neste projeto.
+    function renderizarLista(tarefasParaRenderizar) {
+        listaTarefasContainer.innerHTML = '';
+        if (tarefasParaRenderizar.length === 0) {
+            listaTarefasContainer.innerHTML = `
+                <div class="empty-state-card card">
+                    <span class="empty-icon">📂</span>
+                    <h3>Nenhuma tarefa encontrada</h3>
+                    <p>Crie uma nova tarefa ou altere os filtros de busca.</p>
+                    <button class="btn-primary btn-sm" id="btnEmptyNova">➕ Criar Tarefa</button>
                 </div>
             `;
+            const emptyBtn = listaTarefasContainer.querySelector('#btnEmptyNova');
+            if (emptyBtn) {
+                emptyBtn.addEventListener('click', () => abrirModalTarefa(null, () => renderizarLista(carregarTarefas())));
+            }
             return;
         }
 
-        filtradas.forEach(t => {
-            const row = document.createElement('div');
-            row.className = `task-row ${t.concluida ? 'completed' : ''} info-hover-box`;
-            row.setAttribute('data-tooltip', `Tarefa: ${t.titulo} • Clique no checkbox para alterar status ou exportar para calendários.`);
-
-            const pCor = t.prioridade === 'alta' ? '#EF4444' : t.prioridade === 'media' ? '#D97706' : '#059669';
-            const pBg = t.prioridade === 'alta' ? '#FEE2E2' : t.prioridade === 'media' ? '#FEF3C7' : '#D1FAE5';
-
-            row.innerHTML = `
-                <!-- COLUNA 1: NOME DA TAREFA -->
-                <div class="task-title-cell">
-                    <input type="checkbox" ${t.concluida ? 'checked' : ''} style="cursor: pointer; accent-color: #6366F1; width: 16px; height: 16px;">
-                    <div style="display: flex; flex-direction: column;">
-                        <span class="task-title-text" style="font-weight: 600; color: #0F172A; font-size: 0.9rem;">${t.titulo}</span>
-                        <span style="font-size: 0.75rem; color: #64748B;">🏷️ ${t.categoria} • ${t.diaSemana ? t.diaSemana.toUpperCase() : 'SEMANA'}</span>
-                    </div>
-                </div>
-
-                <!-- COLUNA 2: RESPONSÁVEL -->
-                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #334155;">
-                    <span style="width: 22px; height: 22px; border-radius: 50%; background: #6366F1; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;">KS</span>
-                    <span>Keren Silva</span>
-                </div>
-
-                <!-- COLUNA 3: VENCIMENTO -->
-                <div style="font-size: 0.85rem; color: #64748B;">
-                    📅 ${t.data || 'Sem data'}
-                </div>
-
-                <!-- COLUNA 4: PRIORIDADE -->
-                <div>
-                    <span style="font-size: 0.75rem; font-weight: 700; color: ${pCor}; background: ${pBg}; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">
-                        ${t.prioridade || 'Média'}
-                    </span>
-                </div>
-
-                <!-- COLUNA 5: STATUS -->
-                <div>
-                    <span style="font-size: 0.75rem; font-weight: 700; color: ${t.concluida ? '#059669' : '#D97706'}; background: ${t.concluida ? '#D1FAE5' : '#FEF3C7'}; padding: 3px 8px; border-radius: 6px;">
-                        ${t.concluida ? 'Concluída' : 'Pendente'}
-                    </span>
-                </div>
-
-                <!-- COLUNA 6: SINCRONIZAÇÃO EXTERNA -->
-                <div style="display: flex; gap: 6px; align-items: center; position: relative;">
-                    <button class="btn-secondary btn-sync-calendar" style="padding: 4px 8px; font-size: 0.75rem;">📅 Sync</button>
-                    <div class="sync-dropdown" style="display: none; flex-direction: column; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 4px; position: absolute; top: 100%; right: 0; z-index: 50; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                        <button data-provider="google" style="background: none; border: none; color: #0F172A; padding: 6px; text-align: left; font-size: 0.75rem; cursor: pointer;">🌐 Google</button>
-                        <button data-provider="outlook" style="background: none; border: none; color: #0F172A; padding: 6px; text-align: left; font-size: 0.75rem; cursor: pointer;">📧 Outlook/Teams</button>
-                        <button data-provider="ics" style="background: none; border: none; color: #0F172A; padding: 6px; text-align: left; font-size: 0.75rem; cursor: pointer;">📲 iCal (.ics)</button>
-                    </div>
-                    <button class="btn-secondary btn-share-row" style="padding: 4px 8px; font-size: 0.75rem;">📤</button>
-                </div>
-            `;
-
-            row.addEventListener('click', (event) => {
-                if (event.target.closest('button') || event.target.closest('input')) return;
-                abrirDetalheTarefa(t);
-            });
-
-            // Checkbox handler
-            const chk = row.querySelector('input[type="checkbox"]');
-            chk.addEventListener('change', (event) => {
-                event.stopPropagation();
-                t.concluida = chk.checked;
-                const atuais = carregarTarefas();
-                const idx = atuais.findIndex(item => item.id === t.id);
-                if (idx !== -1) {
-                    atuais[idx].concluida = t.concluida;
-                    salvarTarefas(atuais);
-                }
-                renderizar(carregarTarefas());
-            });
-
-            // Sync menu
-            const btnSync = row.querySelector('.btn-sync-calendar');
-            const drop = row.querySelector('.sync-dropdown');
-            btnSync.addEventListener('click', (e) => {
-                e.stopPropagation();
-                drop.style.display = drop.style.display === 'flex' ? 'none' : 'flex';
-            });
-
-            drop.querySelectorAll('button').forEach(b => {
-                b.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const provider = e.target.dataset.provider;
-                    exportarParaCalendario(t, provider);
-                    drop.style.display = 'none';
-                });
-            });
-
-            const btnShare = row.querySelector('.btn-share-row');
-            btnShare.addEventListener('click', () => {
-                compartilharTarefa(t).catch(console.error);
-            });
-
-            listaContainer.appendChild(row);
+        tarefasParaRenderizar.forEach(tarefa => {
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = cardTarefaHTML(tarefa);
+            const cardElement = wrapper.firstElementChild;
+            listaTarefasContainer.appendChild(cardElement);
+            adicionarListenersAoCard(cardElement, tarefa);
         });
     }
 
-    // Input de busca
-    const buscaInput = page.querySelector("#buscarTarefa");
+    function adicionarListenersAoCard(card, tarefa) {
+        // Checkbox animado
+        const checkbox = card.querySelector('.task-checkbox');
+        checkbox.addEventListener('change', () => {
+            tarefa.concluida = checkbox.checked;
+            const tarefasAtuais = carregarTarefas();
+            const index = tarefasAtuais.findIndex(t => t.id === tarefa.id);
+            if (index !== -1) {
+                tarefasAtuais[index].concluida = tarefa.concluida;
+                salvarTarefas(tarefasAtuais);
+            }
+            card.classList.toggle('completed', tarefa.concluida);
+        });
+
+        // Botão Editar
+        const btnEditar = card.querySelector('.btn-edit-task');
+        if (btnEditar) {
+            btnEditar.addEventListener('click', () => {
+                abrirModalTarefa(tarefa, () => {
+                    todasAsTarefas = carregarTarefas();
+                    renderizarLista(todasAsTarefas);
+                });
+            });
+        }
+
+        // Botão Excluir
+        const btnExcluir = card.querySelector('.btn-delete-task');
+        if (btnExcluir) {
+            btnExcluir.addEventListener('click', () => {
+                if (confirm(`Deseja realmente excluir a tarefa "${tarefa.titulo}"?`)) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(10px)';
+                    setTimeout(() => {
+                        removerTarefa(tarefa.id);
+                        todasAsTarefas = carregarTarefas();
+                        renderizarLista(todasAsTarefas);
+                    }, 250);
+                }
+            });
+        }
+
+        // Swipe para excluir em mobile
+        let startX = 0;
+        card.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
+        card.addEventListener("touchend", e => {
+            const endX = e.changedTouches[0].clientX;
+            if (startX - endX > 90) {
+                card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                card.style.transform = 'translateX(-100%)';
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    removerTarefa(tarefa.id);
+                    todasAsTarefas = carregarTarefas();
+                    renderizarLista(todasAsTarefas);
+                }, 300);
+            }
+        });
+
+        // Toggle do Menu de Calendário
+        const btnCal = card.querySelector('.btn-calendar');
+        if (btnCal) {
+            btnCal.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = card.querySelector('.calendar-menu');
+                document.querySelectorAll('.calendar-menu.visible').forEach(m => {
+                    if (m !== menu) m.classList.remove('visible');
+                });
+                menu.classList.toggle('visible');
+            });
+        }
+
+        // Itens do menu de calendário
+        card.querySelectorAll('.calendar-menu button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const provider = e.target.dataset.provider;
+                exportarParaCalendario(tarefa, provider);
+                card.querySelector('.calendar-menu').classList.remove('visible');
+            });
+        });
+
+        // Botão Compartilhar
+        const btnShare = card.querySelector('.btn-share');
+        if (btnShare) {
+            btnShare.addEventListener('click', () => {
+                compartilharTarefa(tarefa).catch(console.error);
+            });
+        }
+    }
+
+    // Busca e Filtros
+    const buscaInput = app.querySelector("#buscarTarefa");
     buscaInput.addEventListener("input", () => {
-        const txt = buscaInput.value.toLowerCase();
-        const atuais = carregarTarefas();
-        const res = atuais.filter(t => 
-            t.titulo.toLowerCase().includes(txt) || 
-            t.categoria.toLowerCase().includes(txt)
+        const texto = buscaInput.value.toLowerCase();
+        const filtradas = todasAsTarefas.filter(t =>
+            t.titulo.toLowerCase().includes(texto) ||
+            (t.descricao && t.descricao.toLowerCase().includes(texto)) ||
+            (t.categoria && t.categoria.toLowerCase().includes(texto))
         );
-        renderizar(res);
+        renderizarLista(filtradas);
     });
 
-    // Pílulas de Filtro
-    page.querySelectorAll('.filter-pill').forEach(pill => {
+    const filterPills = app.querySelectorAll('.filter-pill');
+    filterPills.forEach(pill => {
         pill.addEventListener('click', () => {
-            page.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            filterPills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
-            const f = pill.dataset.filter;
-            if (f === 'alta') {
-                filtroPrioridade = 'alta';
-                filtroDiaSemana = 'todos';
-            } else {
-                filtroPrioridade = 'todas';
-                filtroDiaSemana = f;
+            const filterType = pill.dataset.filter;
+            const hojeStr = new Date().toISOString().split("T")[0];
+
+            let tarefasFiltradas = todasAsTarefas;
+
+            if (filterType === 'hoje') {
+                tarefasFiltradas = todasAsTarefas.filter(t => t.data === hojeStr);
+            } else if (filterType === 'urgente') {
+                tarefasFiltradas = todasAsTarefas.filter(t => t.prioridade === 'urgente');
+            } else if (filterType === 'alta') {
+                tarefasFiltradas = todasAsTarefas.filter(t => t.prioridade === 'alta');
+            } else if (filterType.startsWith('cat_')) {
+                const catNome = filterType.replace('cat_', '');
+                tarefasFiltradas = todasAsTarefas.filter(t => t.categoria === catNome);
             }
-            renderizar(carregarTarefas());
+
+            renderizarLista(tarefasFiltradas);
         });
     });
 
-    renderizar(todasAsTarefas);
-    return page;
+    const btnNova = app.querySelector('#btnNovaTarefaMain');
+    btnNova.addEventListener('click', () => {
+        abrirModalTarefa(null, () => {
+            todasAsTarefas = carregarTarefas();
+            renderizarLista(todasAsTarefas);
+        });
+    });
+
+    renderizarLista(todasAsTarefas);
+}
+
+function cardTarefaHTML(t) {
+    const prioridadeLabels = {
+        baixa: 'Baixa',
+        media: 'Média',
+        alta: 'Alta',
+        urgente: 'Urgente'
+    };
+
+    return `
+        <article class="task-card card glass priority-border-${t.prioridade} ${t.concluida ? 'completed' : ''}" data-id="${t.id}">
+            <div class="task-card-header">
+                <label class="custom-checkbox" title="Marcar como concluída">
+                    <input type="checkbox" class="task-checkbox" ${t.concluida ? "checked" : ""}>
+                    <span class="checkmark"></span>
+                </label>
+
+                <h3 class="task-title">${t.titulo}</h3>
+
+                <div class="task-card-menu-actions">
+                    <button class="btn-icon btn-edit-task" title="Editar tarefa">✏️</button>
+                    <button class="btn-icon btn-delete-task" title="Excluir tarefa">🗑️</button>
+                </div>
+            </div>
+
+            ${t.descricao ? `<p class="task-desc">${t.descricao}</p>` : ''}
+
+            <div class="task-tags-row">
+                <span class="tag-category">#${t.categoria}</span>
+                <span class="priority-pill priority-pill-${t.prioridade}">${prioridadeLabels[t.prioridade] || t.prioridade}</span>
+                ${t.provedorReuniao ? `<span class="badge-provider provider-${t.provedorReuniao.toLowerCase()}">📹 ${t.provedorReuniao}</span>` : ''}
+            </div>
+
+            <div class="task-meta-footer">
+                <span class="task-time-badge">
+                    ⏰ ${t.data || 'Sem data'} ${t.horario ? `• ${t.horario}` : ''}
+                </span>
+
+                <div class="task-action-dropdowns">
+                    <div class="calendar-export-wrapper">
+                        <button class="btn-secondary btn-sm btn-calendar">📅 Calendário ▾</button>
+                        <div class="calendar-menu">
+                            <button data-provider="google">Google Calendar</button>
+                            <button data-provider="outlook">Outlook</button>
+                            <button data-provider="ics">Apple / Teams (.ics)</button>
+                        </div>
+                    </div>
+                    <button class="btn-secondary btn-sm btn-share" title="Compartilhar">📤 Share</button>
+                </div>
+            </div>
+        </article>
+    `;
 }
 
 export default {

@@ -1,31 +1,50 @@
-const CACHE = "taskflow-v2";
+const CACHE = "taskflow-v4";
 
 const ASSETS = [
-    "./",
-    "./index.html",
-    "./manifest.json",
-    "./src/css/microframework.css",
-    "./src/css/dashboard.css",
-    "./src/css/tarefas.css",
-    "./src/css/responsive.css",
-    "./src/css/navbar.css",
-    "./src/css/navbar-mobile.css",
-    "./src/css/categorias.css",
-    "./src/css/calendario.css",
-    "./src/js/main.js",
-    "./src/img/icons/icon-192.png",
-    "./src/img/icons/icon-512.png"
+    "/",
+    "/index.html",
+    "/manifest.json",
+
+    "/src/css/microframework.css",
+    "/src/css/dashboard.css",
+    "/src/css/tarefas.css",
+    "/src/css/navbar.css",
+    "/src/css/categorias.css",
+    "/src/css/modal.css",
+    "/src/css/login.css",
+    "/src/css/perfil.css",
+    "/src/css/responsive.css",
+    "/src/css/calendario.css",
+    "/src/css/navbar-mobile.css",
+
+    "/src/js/main.js",
+    "/src/js/rotas.js",
+    "/src/js/tarefasStorage.js",
+    "/src/js/authStorage.js",
+    "/src/js/components/rotas/rotas.js",
+    "/src/js/components/navbar/navbar.js",
+    "/src/js/components/modal/modalTarefa.js",
+    "/src/js/components/services/api.js",
+    "/src/js/components/services/apiCache.js",
+    "/src/js/components/services/storageStrategy.js",
+    "/src/js/components/services/tarefasStorage.js",
+    "/src/js/components/services/authStorage.js",
+    "/src/js/components/paginas/dashboard.js",
+    "/src/js/components/paginas/tarefas.js",
+    "/src/js/components/paginas/categorias.js",
+    "/src/js/components/paginas/calendario.js",
+    "/src/js/components/paginas/login.js",
+    "/src/js/components/paginas/perfil.js",
+
+    "/sync.js",
+    "/notificacoes.js"
 ];
 
 self.addEventListener("install", event => {
-    self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE).then(async cache => {
-            // Tenta adicionar cada recurso individualmente para evitar travamento em caso de 404 pontual
-            await Promise.allSettled(
-                ASSETS.map(url => cache.add(url).catch(err => console.warn(`Aviso SW: Falha ao cachear ${url}`, err)))
-            );
-        })
+        caches.open(CACHE)
+            .then(cache => cache.addAll(ASSETS))
+            .then(() => self.skipWaiting())
     );
 });
 
@@ -42,24 +61,18 @@ self.addEventListener("activate", event => {
 });
 
 self.addEventListener("fetch", event => {
-    if (event.request.method !== "GET") return;
-
     event.respondWith(
-        caches.match(event.request).then(cachedResponse => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-            return fetch(event.request).then(networkResponse => {
-                // Atualiza o cache dinamicamente para requisições GET bem-sucedidas
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === "basic") {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE).then(cache => cache.put(event.request, responseToCache));
+        caches.match(event.request)
+            .then(cachedResponse => {
+                if (cachedResponse) {
+                    fetch(event.request).then(networkResponse => {
+                        if (networkResponse && networkResponse.status === 200) {
+                            caches.open(CACHE).then(cache => cache.put(event.request, networkResponse));
+                        }
+                    }).catch(() => {});
+                    return cachedResponse;
                 }
-                return networkResponse;
-            }).catch(() => {
-                // Fallback offline se a rede falhar
-                return caches.match("./index.html");
-            });
-        })
+                return fetch(event.request);
+            })
     );
 });

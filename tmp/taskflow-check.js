@@ -71,11 +71,11 @@ function obterProximaTarefa(tarefas2) {
 }
 function cardEstatistica(titulo, valor, classe, tooltipTexto) {
   return `
-    <div class="stat-card ${classe} info-hover-box" data-tooltip="${tooltipTexto}">
-      <span class="stat-title">${titulo}</span>
-      <h2 class="stat-value" data-value="${valor}">0</h2>
-    </div>
-  `;
+        <div class="stat-card ${classe} info-hover-box" data-tooltip="${tooltipTexto}">
+            <span class="stat-title">${titulo}</span>
+            <h2 class="stat-value" data-value="${valor}">0</h2>
+        </div>
+    `;
 }
 function dashboard() {
   const tarefas2 = carregarTarefas();
@@ -84,118 +84,132 @@ function dashboard() {
   const page = document.createElement("div");
   page.className = "dashboard-container page-enter";
   page.innerHTML = `
-    <section class="dashboard">
-
-      <!-- HERO DASHBOARD -->
-      <div class="dashboard-hero fade-up info-hover-box" data-tooltip="Painel de vis\xE3o geral da sua semana no ClickUp Workspace. Apresenta m\xE9tricas em tempo real.">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;">
-            <div>
-                <h1>${saudacao()}, Keren \u{1F44B}</h1>
-                <p>Organize sua semana com clareza, alta performance e eleg\xE2ncia.</p>
-            </div>
-            <span class="info-badge" title="Passe o mouse ou toque para ver a fun\xE7\xE3o da se\xE7\xE3o">\u2139\uFE0F Fun\xE7\xE3o do Hero</span>
-        </div>
-      </div>
-
-      <!-- GRID DE ESTAT\xCDSTICAS DA SEMANA -->
-      <div class="dashboard-grid fade-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
-        ${cardEstatistica("Tarefas Hoje", stats.hoje, "primary", "M\xE9trica de tarefas agendadas para a data atual.")}
-        ${cardEstatistica("Conclu\xEDdas", stats.concluidas, "success", "Total de tarefas finalizadas na semana.")}
-        ${cardEstatistica("Reuni\xF5es", 3, "accent", "Compromissos agendados via Teams, Google ou Outlook.")}
-        ${cardEstatistica("Produtividade", `${stats.progresso}%`, "warning", "Taxa percentual de conclus\xE3o das tarefas.")}
-      </div>
-
-      <!-- PAIN\xC9IS LADO A LADO -->
-      <div class="dashboard-panels fade-up">
-
-        <!-- PR\xD3XIMA TAREFA PENDENTE -->
-        <div class="card dashboard-panel glass-card info-hover-box" data-tooltip="Exibe a tarefa priorit\xE1ria agendada para ser executada a seguir.">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="color: #0F172A; font-size: 1.1rem; margin: 0; font-weight: 700;">\u{1F4CC} Pr\xF3xima Tarefa</h3>
-            <span class="info-badge">\u2139\uFE0F Destaque</span>
-          </div>
-
-          ${proxima ? `
-                <div class="next-task" style="background: #F8FAFC; padding: 16px; border-radius: 12px; border-left: 4px solid var(--primary-color);">
-                  <strong style="font-size: 1.05rem; color: #0F172A; display: block;">${proxima.titulo}</strong>
-                  <p style="color: #64748B; font-size: 0.9rem; margin: 4px 0 8px 0;">${proxima.categoria} \u2022 Prioridade ${proxima.prioridade || "M\xE9dia"}</p>
-                  <span style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600;">\u{1F5D3}\uFE0F ${proxima.data || "Hoje"} \u2022 \u23F0 ${proxima.horario || "14:00"}</span>
+        <section class="dashboard">
+            <div class="dashboard-hero fade-up info-hover-box" data-tooltip="Painel de vis\xE3o geral da semana e do trabalho ativo do projeto.">
+                <div class="dashboard-hero-row">
+                    <div>
+                        <p class="eyebrow">TaskFlow Workspace</p>
+                        <h1>${saudacao()}, Keren \u{1F44B}</h1>
+                        <p>Seu fluxo de trabalho em foco: prioridade, execu\xE7\xE3o e acompanhamento em tempo real.</p>
+                    </div>
+                    <button class="btn-primary" onclick="window.location.hash = '#tarefas'">+ Criar tarefa</button>
                 </div>
-              ` : `
-                <p style="color: #64748B; font-size: 0.95rem;">Nenhuma tarefa pendente no momento. \u{1F389}</p>
-              `}
-        </div>
+            </div>
 
-        <!-- PR\xD3XIMAS REUNI\xD5ES EXTERNAS -->
-        <div class="card dashboard-panel glass-card info-hover-box" data-tooltip="Reuni\xF5es sincronizadas com Teams, Google e Outlook.">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="color: #0F172A; font-size: 1.1rem; margin: 0; font-weight: 700;">\u{1F4C5} Pr\xF3ximas Reuni\xF5es</h3>
-            <span class="info-badge">\u2139\uFE0F Sync</span>
-          </div>
+            <div class="dashboard-grid fade-up">
+                ${cardEstatistica("Tarefas Hoje", stats.hoje, "primary", "M\xE9trica de tarefas agendadas para hoje.")}
+                ${cardEstatistica("Conclu\xEDdas", stats.concluidas, "success", "Tarefas finalizadas at\xE9 o momento.")}
+                ${cardEstatistica("Reuni\xF5es", 3, "accent", "Compromissos sincronizados e agendados.")}
+                ${cardEstatistica("Produtividade", `${stats.progresso}%`, "warning", "Percentual de avan\xE7o geral.")}
+            </div>
 
-          <ul class="meeting-list" style="display: flex; flex-direction: column; gap: 10px;">
-            <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge teams" style="background: #5B5FC7; color: white; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 0.75rem;">Teams</span>
-                <span style="color: #0F172A; font-weight: 600; font-size: 0.9rem;">Projeto Integrador</span>
-              </div>
-              <span style="color: #64748B; font-size: 0.85rem;">10:00</span>
-            </li>
+            <div class="dashboard-panels fade-up">
+                <div class="card dashboard-panel glass-card info-hover-box" data-tooltip="Tarefa mais urgente e priorit\xE1ria para execu\xE7\xE3o.">
+                    <div class="panel-header">
+                        <h3>\u{1F4CC} Pr\xF3xima tarefa</h3>
+                        <span class="info-badge">Prioridade</span>
+                    </div>
 
-            <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge google" style="background: #EA4335; color: white; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 0.75rem;">Google</span>
-                <span style="color: #0F172A; font-weight: 600; font-size: 0.9rem;">Mentoria Frontend</span>
-              </div>
-              <span style="color: #64748B; font-size: 0.85rem;">15:30</span>
-            </li>
+                    ${proxima ? `
+                            <div class="next-task">
+                                <strong>${proxima.titulo}</strong>
+                                <p>${proxima.categoria} \u2022 ${proxima.prioridade || "M\xE9dia"}</p>
+                                <span>\u{1F5D3}\uFE0F ${proxima.data || "Hoje"} \u2022 \u23F0 ${proxima.horario || "14:00"}</span>
+                            </div>
+                        ` : `
+                            <p class="empty-state">Nenhuma tarefa pendente no momento. \u{1F389}</p>
+                        `}
+                </div>
 
-            <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge outlook" style="background: #0078D4; color: white; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 0.75rem;">Outlook</span>
-                <span style="color: #0F172A; font-weight: 600; font-size: 0.9rem;">Sincroniza\xE7\xE3o de Sprints</span>
-              </div>
-              <span style="color: #64748B; font-size: 0.85rem;">17:00</span>
-            </li>
-          </ul>
-        </div>
+                <div class="card dashboard-panel glass-card info-hover-box" data-tooltip="Acompanhamento do projeto e evolu\xE7\xE3o das \xE1reas de foco.">
+                    <div class="panel-header">
+                        <h3>\u{1F4C8} Fluxo da semana</h3>
+                        <span class="info-badge">Status</span>
+                    </div>
 
-      </div>
+                    <div class="progress-block">
+                        <div class="progress-label">
+                            <span>Trabalho</span>
+                            <strong>72%</strong>
+                        </div>
+                        <div class="progress-bar"><span style="width: 72%"></span></div>
+                    </div>
 
-      <!-- A\xC7\xD5ES R\xC1PIDAS -->
-      <div class="card quick-actions glass-card fade-up info-hover-box" data-tooltip="Atalhos r\xE1pidos de navega\xE7\xE3o para tarefas, calend\xE1rio, categorias e configura\xE7\xF5es.">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="color: #0F172A; font-size: 1.1rem; margin: 0; font-weight: 700;">\u26A1 A\xE7\xF5es R\xE1pidas</h3>
-            <span class="info-badge">\u2139\uFE0F Atalhos</span>
-        </div>
+                    <div class="progress-block">
+                        <div class="progress-label">
+                            <span>Faculdade</span>
+                            <strong>54%</strong>
+                        </div>
+                        <div class="progress-bar"><span style="width: 54%"></span></div>
+                    </div>
 
-        <div class="actions-grid" style="display: flex; gap: 12px; flex-wrap: wrap;">
-          <a href="#tarefas" class="btn-primary">
-            \u2795 Gerenciar Tarefas
-          </a>
-          <a href="#calendario" class="btn-secondary">
-            \u{1F4C5} Agenda Semanal
-          </a>
-          <a href="#categorias" class="btn-secondary">
-            \u{1F3F7}\uFE0F Categorias
-          </a>
-          <a href="#configuracoes" class="btn-secondary">
-            \u2699\uFE0F Sincroniza\xE7\xE3o & Ajustes
-          </a>
-        </div>
-      </div>
+                    <div class="progress-block">
+                        <div class="progress-label">
+                            <span>Pessoal</span>
+                            <strong>88%</strong>
+                        </div>
+                        <div class="progress-bar"><span style="width: 88%"></span></div>
+                    </div>
+                </div>
+            </div>
 
-    </section>
-  `;
+            <div class="operation-grid">
+                <div class="card quick-actions glass-card info-hover-box" data-tooltip="A\xE7\xF5es r\xE1pidas para navega\xE7\xE3o e produtividade.">
+                    <div class="panel-header">
+                        <h3>\u26A1 A\xE7\xF5es r\xE1pidas</h3>
+                        <span class="info-badge">Atalhos</span>
+                    </div>
+
+                    <div class="actions-grid">
+                        <a href="#tarefas" class="btn-primary">\u2795 Gerenciar tarefas</a>
+                        <a href="#calendario" class="btn-secondary">\u{1F4C5} Agenda semanal</a>
+                        <a href="#categorias" class="btn-secondary">\u{1F3F7}\uFE0F Categorias</a>
+                        <a href="#configuracoes" class="btn-secondary">\u2699\uFE0F Ajustes</a>
+                    </div>
+                </div>
+
+                <div class="card activity-panel glass-card info-hover-box" data-tooltip="Atividade recente do workspace e pr\xF3ximos passos.">
+                    <div class="panel-header">
+                        <h3>\u{1F9ED} Atividade recente</h3>
+                        <span class="info-badge">Hoje</span>
+                    </div>
+
+                    <ul class="activity-list">
+                        <li>
+                            <span class="activity-dot purple"></span>
+                            <div>
+                                <strong>Dashboard atualizado</strong>
+                                <small>10 minutos atr\xE1s</small>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="activity-dot blue"></span>
+                            <div>
+                                <strong>Reuni\xE3o marcada com a equipe</strong>
+                                <small>1 hora atr\xE1s</small>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="activity-dot green"></span>
+                            <div>
+                                <strong>Rodada de revis\xE3o conclu\xEDda</strong>
+                                <small>Hoje</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    `;
   iniciarAnimacaoContadores(page);
   return page;
 }
 function iniciarAnimacaoContadores(container) {
   const elementos = container.querySelectorAll("[data-value]");
   elementos.forEach((elemento) => {
-    const valStr = elemento.dataset.value.toString();
-    const alvo = parseInt(valStr.replace("%", ""));
-    if (isNaN(alvo)) return;
+    const valStr = String(elemento.dataset.value);
+    const alvo = parseInt(valStr.replace("%", ""), 10);
+    if (Number.isNaN(alvo)) return;
     let atual = 0;
     const incremento = Math.max(1, Math.ceil(alvo / 25));
     const timer = setInterval(() => {
@@ -204,8 +218,8 @@ function iniciarAnimacaoContadores(container) {
         atual = alvo;
         clearInterval(timer);
       }
-      elemento.textContent = valStr.includes("%") ? `${atual}%` : atual;
-    }, 30);
+      elemento.textContent = valStr.includes("%") ? `${atual}%` : String(atual);
+    }, 25);
   });
 }
 var dashboard_default = {
@@ -294,69 +308,32 @@ ${tarefa.data} ${tarefa.horario}
 }
 
 // src/js/components/paginas/tarefas.js
+var BOARD_COLUMNS = [
+  { key: "todo", label: "\xC0 fazer", icon: "\u{1F4DD}", accent: "purple" },
+  { key: "doing", label: "Fazendo", icon: "\u2699\uFE0F", accent: "blue" },
+  { key: "review", label: "Revis\xE3o", icon: "\u{1F440}", accent: "amber" },
+  { key: "done", label: "Conclu\xEDdo", icon: "\u2705", accent: "green" }
+];
+function normalizarStatus(tarefa) {
+  if (tarefa.status) return tarefa.status;
+  if (tarefa.concluida) return "done";
+  return "todo";
+}
 function tarefas() {
   const todasAsTarefas = carregarTarefas();
   const page = document.createElement("div");
   page.className = "tarefas-page-wrapper page-enter";
   let filtroPrioridade = "todas";
   let filtroDiaSemana = "todos";
+  let viewMode = "board";
   page.innerHTML = `
         <section class="tarefas-page">
-            <!-- HEADER CLICKUP COM CONTROLES DE FILTRO -->
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <h2 style="font-size: 1.3rem; font-weight: 800; color: #0F172A; margin: 0;">\u{1F4C1} Projeto 1 \u2014 Lista de Tarefas</h2>
-                    <span class="info-badge">\u2139\uFE0F Visualiza\xE7\xE3o ClickUp</span>
+            <div class="workspace-header glass-card">
+                <div>
+                    <p class="eyebrow">Workspace</p>
+                    <h2>Projeto 1 \u2014 Opera\xE7\xE3o semanal</h2>
                 </div>
-                <button id="btnAbrirModalCriar" class="btn-primary">\u2795 Add Tarefa</button>
-            </div>
-
-            <!-- FORMUL\xC1RIO INLINE EXPANS\xCDVEL -->
-            <div id="formNovaTarefaContainer" class="glass-card" style="display: none; padding: 20px; border-radius: 14px; margin-bottom: 14px; background: #FFFFFF; border: 1px solid var(--primary-color);">
-                <h3 style="color: #0F172A; margin-bottom: 12px; font-size: 1rem; font-weight: 700;">\u2728 Criar Nova Tarefa</h3>
-                <form id="formCriarTarefa" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Nome da Tarefa</label>
-                        <input type="text" id="novoTitulo" required placeholder="Digite o nome da tarefa..." style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Categoria</label>
-                        <select id="novaCategoria" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                            <option value="Trabalho">Trabalho</option>
-                            <option value="Faculdade">Faculdade</option>
-                            <option value="Pessoal">Pessoal</option>
-                            <option value="Reuni\xF5es">Reuni\xF5es</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Dia da Semana</label>
-                        <select id="novoDiaSemana" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                            <option value="segunda">Segunda-feira</option>
-                            <option value="terca">Ter\xE7a-feira</option>
-                            <option value="quarta">Quarta-feira</option>
-                            <option value="quinta">Quinta-feira</option>
-                            <option value="sexta">Sexta-feira</option>
-                            <option value="sabado">S\xE1bado</option>
-                            <option value="domingo">Domingo</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Prioridade</label>
-                        <select id="novaPrioridade" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                            <option value="baixa">Baixa</option>
-                            <option value="media" selected>M\xE9dia</option>
-                            <option value="alta">Alta</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display: block; font-size: 0.8rem; color: #64748B; margin-bottom: 4px; font-weight: 600;">Data de Vencimento</label>
-                        <input type="date" id="novaData" style="width: 100%; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 8px 12px; border-radius: 8px; color: #0F172A;">
-                    </div>
-                    <div style="grid-column: 1 / -1; display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px;">
-                        <button type="button" id="btnCancelarCriar" class="btn-secondary">Cancelar</button>
-                        <button type="submit" class="btn-primary">Salvar Tarefa</button>
-                    </div>
-                </form>
+                <button id="btnAbrirModalCriar" class="btn-primary">\u2795 Nova tarefa</button>
             </div>
 
             <div class="workspace-summary">
@@ -373,15 +350,14 @@ function tarefas() {
                     <strong id="summaryDone">0</strong>
                 </div>
                 <div class="metric-card metric-orange">
-                    <span class="metric-label">Pendente</span>
+                    <span class="metric-label">Pendentes</span>
                     <strong id="summaryPending">0</strong>
                 </div>
             </div>
 
-            <!-- CONTROLES DE BARRA DE BUSCA E FILTROS -->
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;" class="info-hover-box" data-tooltip="Busca r\xE1pida e filtragem inteligente por dia da semana e urg\xEAncia.">
-                <input id="buscarTarefa" type="text" placeholder="\u{1F50D} Pesquisar tarefas por nome ou categoria..." style="flex: 1; min-width: 240px; background: #FFFFFF; border: 1px solid #CBD5E1; padding: 8px 14px; border-radius: 8px; color: #0F172A; font-size: 0.9rem;">
-                <div class="filters" style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <div class="toolbar glass-card">
+                <input id="buscarTarefa" type="text" class="search-input" placeholder="Buscar por tarefa, categoria ou status..." />
+                <div class="filters">
                     <button class="filter-pill active" data-filter="todas">Todas</button>
                     <button class="filter-pill" data-filter="segunda">Segunda</button>
                     <button class="filter-pill" data-filter="terca">Ter\xE7a</button>
@@ -390,48 +366,101 @@ function tarefas() {
                     <button class="filter-pill" data-filter="sexta">Sexta</button>
                     <button class="filter-pill" data-filter="alta">\u{1F525} Alta</button>
                 </div>
+                <div class="view-switch">
+                    <button class="view-button active" data-view="board">Quadro</button>
+                    <button class="view-button" data-view="list">Lista</button>
+                </div>
             </div>
 
-            <!-- TABELA DE TAREFAS ESTILO CLICKUP WORKSPACE -->
-            <div class="clickup-table-view" style="margin-top: 8px;">
-                <!-- GRUPO: PENDENTE -->
-                <div class="status-group-header">
-                    <span>\u25BC</span>
-                    <span class="status-badge pendente">PENDENTE</span>
-                    <span id="pendenteCount">0</span>
-                </div>
-
-                <!-- CABE\xC7ALHO DA TABELA -->
-                <div class="table-header-row">
-                    <span>Nome</span>
-                    <span>Respons\xE1vel</span>
-                    <span>Vencimento</span>
-                    <span>Prioridade</span>
-                    <span>Status</span>
-                    <span>Sincroniza\xE7\xE3o</span>
-                </div>
-
-                <!-- LISTA DE LINHAS DE TAREFAS -->
-                <div id="listaTarefas"></div>
-
-                <!-- LINHA INLINE PARA ADICIONAR R\xC1PIDO -->
-                <div class="inline-add-task-row" id="inlineAddTaskTrigger">
-                    <span style="font-size: 1.1rem; color: #6366F1;">\u2B55</span>
-                    <span style="font-size: 0.88rem; font-weight: 500;">Adicionar Tarefa...</span>
-                </div>
+            <div class="kanban-shell glass-card">
+                <div class="kanban-board" id="kanbanBoard"></div>
+                <div class="task-list-view" id="taskListView"></div>
             </div>
         </section>
+
+        <div id="taskCreateModal" class="task-create-modal hidden">
+            <div class="task-create-panel">
+                <div class="task-create-header">
+                    <div>
+                        <p class="eyebrow">Nova tarefa</p>
+                        <h3>Criar tarefa do projeto</h3>
+                    </div>
+                    <button type="button" class="task-create-close" id="taskCreateClose">\u2715</button>
+                </div>
+
+                <form id="formCriarTarefa" class="task-create-form">
+                    <div class="field-group field-full">
+                        <label>Nome da tarefa</label>
+                        <input type="text" id="novoTitulo" required placeholder="Ex.: Finalizar briefing de lan\xE7amento" />
+                    </div>
+
+                    <div class="field-group">
+                        <label>Categoria</label>
+                        <select id="novaCategoria">
+                            <option value="Trabalho">Trabalho</option>
+                            <option value="Faculdade">Faculdade</option>
+                            <option value="Pessoal">Pessoal</option>
+                            <option value="Reuni\xF5es">Reuni\xF5es</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Status</label>
+                        <select id="novoStatus">
+                            <option value="todo">\xC0 fazer</option>
+                            <option value="doing">Fazendo</option>
+                            <option value="review">Revis\xE3o</option>
+                            <option value="done">Conclu\xEDdo</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Dia da semana</label>
+                        <select id="novoDiaSemana">
+                            <option value="segunda">Segunda-feira</option>
+                            <option value="terca">Ter\xE7a-feira</option>
+                            <option value="quarta">Quarta-feira</option>
+                            <option value="quinta">Quinta-feira</option>
+                            <option value="sexta">Sexta-feira</option>
+                            <option value="sabado">S\xE1bado</option>
+                            <option value="domingo">Domingo</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Prioridade</label>
+                        <select id="novaPrioridade">
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>M\xE9dia</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Data</label>
+                        <input type="date" id="novaData" />
+                    </div>
+
+                    <div class="field-group field-full">
+                        <label>Descri\xE7\xE3o</label>
+                        <textarea id="novaDescricao" rows="3" placeholder="Descreva o contexto, objetivo ou entrega da tarefa..."></textarea>
+                    </div>
+
+                    <div class="task-create-actions">
+                        <button type="button" id="btnCancelarCriar" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar tarefa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     `;
-  const listaContainer = page.querySelector("#listaTarefas");
-  const pendenteCount = page.querySelector("#pendenteCount");
-  const formContainer = page.querySelector("#formNovaTarefaContainer");
+  const kanbanBoard = page.querySelector("#kanbanBoard");
+  const taskListView = page.querySelector("#taskListView");
+  const taskCreateModal = page.querySelector("#taskCreateModal");
+  const formCriar = page.querySelector("#formCriarTarefa");
   const btnAbrir = page.querySelector("#btnAbrirModalCriar");
   const btnCancelar = page.querySelector("#btnCancelarCriar");
-  const formCriar = page.querySelector("#formCriarTarefa");
-  const inlineTrigger = page.querySelector("#inlineAddTaskTrigger");
-  const toggleForm = () => {
-    formContainer.style.display = formContainer.style.display === "none" ? "block" : "none";
-  };
+  const closeModalBtn = page.querySelector("#taskCreateClose");
   const abrirDetalheTarefa = (tarefa) => {
     const overlayExistente = document.querySelector(".task-modal-overlay");
     if (overlayExistente) overlayExistente.remove();
@@ -454,7 +483,7 @@ function tarefas() {
                     </div>
                     <div class="task-property">
                         <span>Status</span>
-                        <strong class="${tarefa.concluida ? "task-status done" : "task-status pending"}">${tarefa.concluida ? "Conclu\xEDda" : "Pendente"}</strong>
+                        <strong class="${tarefa.concluida ? "task-status done" : "task-status pending"}">${normalizarStatus(tarefa) === "done" ? "Conclu\xEDda" : "Pendente"}</strong>
                     </div>
                     <div class="task-property">
                         <span>Data</span>
@@ -472,7 +501,7 @@ function tarefas() {
                 </div>
 
                 <div class="task-modal-actions">
-                    <button class="task-action-btn secondary" data-action="toggle-status">${tarefa.concluida ? "Reabrir tarefa" : "Marcar conclu\xEDda"}</button>
+                    <button class="task-action-btn secondary" data-action="toggle-status">${normalizarStatus(tarefa) === "done" ? "Reabrir tarefa" : "Marcar conclu\xEDda"}</button>
                     <button class="task-action-btn primary" data-action="google">\u{1F4C5} Enviar para Google</button>
                     <button class="task-action-btn secondary" data-action="share">\u{1F4E4} Compartilhar</button>
                 </div>
@@ -488,6 +517,7 @@ function tarefas() {
       const idx = atuais.findIndex((item) => item.id === tarefa.id);
       if (idx !== -1) {
         atuais[idx].concluida = !atuais[idx].concluida;
+        atuais[idx].status = atuais[idx].concluida ? "done" : "todo";
         salvarTarefas(atuais);
         overlay.remove();
         renderizar(carregarTarefas());
@@ -502,151 +532,172 @@ function tarefas() {
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add("visible"));
   };
-  btnAbrir.addEventListener("click", toggleForm);
-  inlineTrigger.addEventListener("click", toggleForm);
-  btnCancelar.addEventListener("click", () => formContainer.style.display = "none");
-  formCriar.addEventListener("submit", (e) => {
-    e.preventDefault();
+  function abrirModalCriacao() {
+    taskCreateModal.classList.remove("hidden");
+    setTimeout(() => page.querySelector("#novoTitulo").focus(), 120);
+  }
+  function fecharModalCriacao() {
+    taskCreateModal.classList.add("hidden");
+    formCriar.reset();
+  }
+  btnAbrir.addEventListener("click", abrirModalCriacao);
+  btnCancelar.addEventListener("click", fecharModalCriacao);
+  closeModalBtn.addEventListener("click", fecharModalCriacao);
+  taskCreateModal.addEventListener("click", (event) => {
+    if (event.target === taskCreateModal) fecharModalCriacao();
+  });
+  formCriar.addEventListener("submit", (event) => {
+    event.preventDefault();
     const nova = {
-      titulo: page.querySelector("#novoTitulo").value,
+      titulo: page.querySelector("#novoTitulo").value.trim(),
       categoria: page.querySelector("#novaCategoria").value,
       diaSemana: page.querySelector("#novoDiaSemana").value,
       prioridade: page.querySelector("#novaPrioridade").value,
       data: page.querySelector("#novaData").value || (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
       horario: "14:00",
       concluida: false,
-      descricao: `Tarefa da categoria ${page.querySelector("#novaCategoria").value}`
+      status: page.querySelector("#novoStatus").value,
+      descricao: page.querySelector("#novaDescricao").value || `Tarefa da categoria ${page.querySelector("#novaCategoria").value}`
     };
+    if (!nova.titulo) return;
     addTask(nova);
-    formContainer.style.display = "none";
-    formCriar.reset();
+    fecharModalCriacao();
     renderizar(carregarTarefas());
   });
+  function criarCardTarefa(tarefa) {
+    const status = normalizarStatus(tarefa);
+    const badgeClass = tarefa.prioridade === "alta" ? "priority-high" : tarefa.prioridade === "media" ? "priority-medium" : "priority-low";
+    return `
+            <article class="board-card ${status}" data-id="${tarefa.id}">
+                <div class="board-card-header">
+                    <span class="board-tag">${tarefa.categoria || "Geral"}</span>
+                    <button class="mini-action" data-action="detail" data-id="${tarefa.id}">\u22EF</button>
+                </div>
+                <h4>${tarefa.titulo}</h4>
+                <p>${tarefa.descricao || "Sem descri\xE7\xE3o adicional."}</p>
+                <div class="card-meta">
+                    <span>\u{1F4C5} ${tarefa.data || "Sem data"}</span>
+                    <span>\u23F0 ${tarefa.horario || "14:00"}</span>
+                </div>
+                <div class="board-card-footer">
+                    <span class="priority-badge ${badgeClass}">${tarefa.prioridade || "media"}</span>
+                    <div class="mini-actions">
+                        <button class="mini-action" data-action="toggle" data-id="${tarefa.id}">${status === "done" ? "\u21A9" : "\u2713"}</button>
+                        <button class="mini-action" data-action="sync" data-id="${tarefa.id}">\u{1F4C5}</button>
+                    </div>
+                </div>
+            </article>
+        `;
+  }
   function renderizar(lista) {
-    listaContainer.innerHTML = "";
-    let filtradas = lista;
-    if (filtroPrioridade === "alta") {
-      filtradas = filtradas.filter((t) => t.prioridade === "alta");
-    } else if (["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"].includes(filtroDiaSemana)) {
-      filtradas = filtradas.filter((t) => t.diaSemana === filtroDiaSemana);
-    }
-    const pendentes = filtradas.filter((t) => !t.concluida);
-    const concluidas = filtradas.filter((t) => t.concluida);
-    const altaPrioridade = filtradas.filter((t) => t.prioridade === "alta" && !t.concluida);
+    const buscaVal = page.querySelector("#buscarTarefa").value.trim().toLowerCase();
+    const filtradas = lista.filter((item) => {
+      const textoBusca = !buscaVal || (item.titulo || "").toLowerCase().includes(buscaVal) || (item.categoria || "").toLowerCase().includes(buscaVal);
+      const atendePrioridade = filtroPrioridade === "todas" || item.prioridade === filtroPrioridade;
+      const atendeDia = filtroDiaSemana === "todos" || item.diaSemana === filtroDiaSemana;
+      return textoBusca && atendePrioridade && atendeDia;
+    });
     page.querySelector("#summaryTotal").textContent = filtradas.length;
-    page.querySelector("#summaryAlta").textContent = altaPrioridade.length;
-    page.querySelector("#summaryDone").textContent = concluidas.length;
-    page.querySelector("#summaryPending").textContent = pendentes.length;
-    pendenteCount.textContent = pendentes.length;
-    if (filtradas.length === 0) {
-      listaContainer.innerHTML = `
-                <div style="padding: 24px; text-align: center; color: #64748B; font-size: 0.9rem;">
-                    Nenhuma tarefa encontrada neste projeto.
+    page.querySelector("#summaryAlta").textContent = filtradas.filter((t) => t.prioridade === "alta").length;
+    page.querySelector("#summaryDone").textContent = filtradas.filter((t) => normalizarStatus(t) === "done").length;
+    page.querySelector("#summaryPending").textContent = filtradas.filter((t) => normalizarStatus(t) !== "done").length;
+    const boardCols = BOARD_COLUMNS.map((coluna) => {
+      const items = filtradas.filter((item) => normalizarStatus(item) === coluna.key);
+      return `
+                <div class="board-column ${coluna.accent}">
+                    <div class="board-column-header">
+                        <span>${coluna.icon} ${coluna.label}</span>
+                        <strong>${items.length}</strong>
+                    </div>
+                    <div class="board-column-body">
+                        ${items.length ? items.map(criarCardTarefa).join("") : '<div class="empty-column">Sem tarefas</div>'}
+                    </div>
                 </div>
             `;
-      return;
+    }).join("");
+    kanbanBoard.innerHTML = boardCols;
+    const listRows = filtradas.map((tarefa) => {
+      const status = normalizarStatus(tarefa);
+      const priorityColor = tarefa.prioridade === "alta" ? "#ef4444" : tarefa.prioridade === "media" ? "#f59e0b" : "#10b981";
+      return `
+                <div class="list-row ${status === "done" ? "done" : ""}">
+                    <div class="list-row-main">
+                        <input type="checkbox" ${status === "done" ? "checked" : ""} data-action="toggle" data-id="${tarefa.id}" />
+                        <div class="list-text">
+                            <strong>${tarefa.titulo}</strong>
+                            <span>${tarefa.categoria} \u2022 ${tarefa.data || "Sem data"}</span>
+                        </div>
+                    </div>
+                    <div class="list-row-meta">
+                        <span class="list-pill" style="background: ${priorityColor}22; color: ${priorityColor};">${tarefa.prioridade || "media"}</span>
+                        <button class="list-action" data-action="detail" data-id="${tarefa.id}">Detalhes</button>
+                        <button class="list-action" data-action="sync" data-id="${tarefa.id}">Sync</button>
+                    </div>
+                </div>
+            `;
+    }).join("");
+    taskListView.innerHTML = listRows || '<div class="empty-list">Nenhuma tarefa corresponde ao filtro atual.</div>';
+    if (viewMode === "board") {
+      kanbanBoard.style.display = "grid";
+      taskListView.style.display = "none";
+    } else {
+      kanbanBoard.style.display = "none";
+      taskListView.style.display = "flex";
     }
-    filtradas.forEach((t) => {
-      const row = document.createElement("div");
-      row.className = `task-row ${t.concluida ? "completed" : ""} info-hover-box`;
-      row.setAttribute("data-tooltip", `Tarefa: ${t.titulo} \u2022 Clique no checkbox para alterar status ou exportar para calend\xE1rios.`);
-      const pCor = t.prioridade === "alta" ? "#EF4444" : t.prioridade === "media" ? "#D97706" : "#059669";
-      const pBg = t.prioridade === "alta" ? "#FEE2E2" : t.prioridade === "media" ? "#FEF3C7" : "#D1FAE5";
-      row.innerHTML = `
-                <!-- COLUNA 1: NOME DA TAREFA -->
-                <div class="task-title-cell">
-                    <input type="checkbox" ${t.concluida ? "checked" : ""} style="cursor: pointer; accent-color: #6366F1; width: 16px; height: 16px;">
-                    <div style="display: flex; flex-direction: column;">
-                        <span class="task-title-text" style="font-weight: 600; color: #0F172A; font-size: 0.9rem;">${t.titulo}</span>
-                        <span style="font-size: 0.75rem; color: #64748B;">\u{1F3F7}\uFE0F ${t.categoria} \u2022 ${t.diaSemana ? t.diaSemana.toUpperCase() : "SEMANA"}</span>
-                    </div>
-                </div>
-
-                <!-- COLUNA 2: RESPONS\xC1VEL -->
-                <div style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #334155;">
-                    <span style="width: 22px; height: 22px; border-radius: 50%; background: #6366F1; color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700;">KS</span>
-                    <span>Keren Silva</span>
-                </div>
-
-                <!-- COLUNA 3: VENCIMENTO -->
-                <div style="font-size: 0.85rem; color: #64748B;">
-                    \u{1F4C5} ${t.data || "Sem data"}
-                </div>
-
-                <!-- COLUNA 4: PRIORIDADE -->
-                <div>
-                    <span style="font-size: 0.75rem; font-weight: 700; color: ${pCor}; background: ${pBg}; padding: 3px 8px; border-radius: 6px; text-transform: uppercase;">
-                        ${t.prioridade || "M\xE9dia"}
-                    </span>
-                </div>
-
-                <!-- COLUNA 5: STATUS -->
-                <div>
-                    <span style="font-size: 0.75rem; font-weight: 700; color: ${t.concluida ? "#059669" : "#D97706"}; background: ${t.concluida ? "#D1FAE5" : "#FEF3C7"}; padding: 3px 8px; border-radius: 6px;">
-                        ${t.concluida ? "Conclu\xEDda" : "Pendente"}
-                    </span>
-                </div>
-
-                <!-- COLUNA 6: SINCRONIZA\xC7\xC3O EXTERNA -->
-                <div style="display: flex; gap: 6px; align-items: center; position: relative;">
-                    <button class="btn-secondary btn-sync-calendar" style="padding: 4px 8px; font-size: 0.75rem;">\u{1F4C5} Sync</button>
-                    <div class="sync-dropdown" style="display: none; flex-direction: column; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 4px; position: absolute; top: 100%; right: 0; z-index: 50; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                        <button data-provider="google" style="background: none; border: none; color: #0F172A; padding: 6px; text-align: left; font-size: 0.75rem; cursor: pointer;">\u{1F310} Google</button>
-                        <button data-provider="outlook" style="background: none; border: none; color: #0F172A; padding: 6px; text-align: left; font-size: 0.75rem; cursor: pointer;">\u{1F4E7} Outlook/Teams</button>
-                        <button data-provider="ics" style="background: none; border: none; color: #0F172A; padding: 6px; text-align: left; font-size: 0.75rem; cursor: pointer;">\u{1F4F2} iCal (.ics)</button>
-                    </div>
-                    <button class="btn-secondary btn-share-row" style="padding: 4px 8px; font-size: 0.75rem;">\u{1F4E4}</button>
-                </div>
-            `;
-      row.addEventListener("click", (event) => {
-        if (event.target.closest("button") || event.target.closest("input")) return;
-        abrirDetalheTarefa(t);
+    function bindBoardAction(selector, callback) {
+      kanbanBoard.querySelectorAll(selector).forEach((element) => {
+        element.addEventListener("click", () => callback(element.dataset.id));
       });
-      const chk = row.querySelector('input[type="checkbox"]');
-      chk.addEventListener("change", (event) => {
-        event.stopPropagation();
-        t.concluida = chk.checked;
-        const atuais = carregarTarefas();
-        const idx = atuais.findIndex((item) => item.id === t.id);
+    }
+    bindBoardAction('[data-action="detail"]', (id) => {
+      const tarefa = carregarTarefas().find((item) => item.id === id);
+      if (tarefa) abrirDetalheTarefa(tarefa);
+    });
+    bindBoardAction('[data-action="toggle"]', (id) => {
+      const atual = carregarTarefas();
+      const idx = atual.findIndex((item) => item.id === id);
+      if (idx !== -1) {
+        atual[idx].concluida = !atual[idx].concluida;
+        atual[idx].status = atual[idx].concluida ? "done" : "todo";
+        salvarTarefas(atual);
+        renderizar(atual);
+      }
+    });
+    bindBoardAction('[data-action="sync"]', (id) => {
+      const tarefa = carregarTarefas().find((item) => item.id === id);
+      if (tarefa) exportarParaCalendario(tarefa, "google");
+    });
+    taskListView.querySelectorAll('[data-action="detail"]').forEach((button) => {
+      button.addEventListener("click", () => {
+        const tarefa = carregarTarefas().find((item) => item.id === button.dataset.id);
+        if (tarefa) abrirDetalheTarefa(tarefa);
+      });
+    });
+    taskListView.querySelectorAll('[data-action="sync"]').forEach((button) => {
+      button.addEventListener("click", () => {
+        const tarefa = carregarTarefas().find((item) => item.id === button.dataset.id);
+        if (tarefa) exportarParaCalendario(tarefa, "google");
+      });
+    });
+    taskListView.querySelectorAll('input[data-action="toggle"]').forEach((checkbox) => {
+      checkbox.addEventListener("change", (event) => {
+        const atual = carregarTarefas();
+        const idx = atual.findIndex((item) => item.id === checkbox.dataset.id);
         if (idx !== -1) {
-          atuais[idx].concluida = t.concluida;
-          salvarTarefas(atuais);
+          atual[idx].concluida = event.target.checked;
+          atual[idx].status = atual[idx].concluida ? "done" : "todo";
+          salvarTarefas(atual);
+          renderizar(atual);
         }
-        renderizar(carregarTarefas());
       });
-      const btnSync = row.querySelector(".btn-sync-calendar");
-      const drop = row.querySelector(".sync-dropdown");
-      btnSync.addEventListener("click", (e) => {
-        e.stopPropagation();
-        drop.style.display = drop.style.display === "flex" ? "none" : "flex";
-      });
-      drop.querySelectorAll("button").forEach((b) => {
-        b.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const provider = e.target.dataset.provider;
-          exportarParaCalendario(t, provider);
-          drop.style.display = "none";
-        });
-      });
-      const btnShare = row.querySelector(".btn-share-row");
-      btnShare.addEventListener("click", () => {
-        compartilharTarefa(t).catch(console.error);
-      });
-      listaContainer.appendChild(row);
     });
   }
-  const buscaInput = page.querySelector("#buscarTarefa");
-  buscaInput.addEventListener("input", () => {
-    const txt = buscaInput.value.toLowerCase();
-    const atuais = carregarTarefas();
-    const res = atuais.filter(
-      (t) => t.titulo.toLowerCase().includes(txt) || t.categoria.toLowerCase().includes(txt)
-    );
-    renderizar(res);
+  page.querySelector("#buscarTarefa").addEventListener("input", () => {
+    renderizar(carregarTarefas());
   });
   page.querySelectorAll(".filter-pill").forEach((pill) => {
     pill.addEventListener("click", () => {
-      page.querySelectorAll(".filter-pill").forEach((p) => p.classList.remove("active"));
+      page.querySelectorAll(".filter-pill").forEach((item) => item.classList.remove("active"));
       pill.classList.add("active");
       const f = pill.dataset.filter;
       if (f === "alta") {
@@ -656,6 +707,14 @@ function tarefas() {
         filtroPrioridade = "todas";
         filtroDiaSemana = f;
       }
+      renderizar(carregarTarefas());
+    });
+  });
+  page.querySelectorAll(".view-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      page.querySelectorAll(".view-button").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      viewMode = button.dataset.view;
       renderizar(carregarTarefas());
     });
   });

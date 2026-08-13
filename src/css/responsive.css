@@ -1,110 +1,43 @@
-/* 
- * TaskFlow - Responsividade & Adaptação Multi-Dispositivo (Modo Claro Elegante)
- * Mobile Small (320px), Mobile (480px), Tablet (768px), Laptop (1024px), Desktop (1280px)
- */
+/* ==========================================================================
+   Responsive Adjustments & Touch UX
+   ========================================================================== */
 
-/* Mobile Pequeno (320px - 479px) */
-@media (max-width: 479px) {
-  #app {
-    padding: 1rem 0.75rem 7rem 0.75rem;
-  }
-
-  .dashboard-hero {
-    padding: 18px !important;
-    border-radius: 16px !important;
-  }
-
-  .dashboard-hero h1 {
-    font-size: 1.35rem !important;
-  }
-
-  .stat-card {
-    padding: 14px !important;
-  }
-
-  .stat-value {
-    font-size: 1.5rem !important;
-  }
-
-  .task-actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .btn-primary, .btn-secondary {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* Mobile Padrão (480px - 768px) */
 @media (max-width: 768px) {
-  .clickup-sidebar {
-    display: none !important;
-  }
+    body {
+        padding-bottom: 80px;
+    }
 
-  .dashboard-grid {
-    grid-template-columns: 1fr 1fr;
-  }
+    .dashboard-wrapper,
+    .tarefas-page-wrapper,
+    .categorias-container,
+    .calendar-page-wrapper,
+    .perfil-container {
+        padding: 1rem 0.85rem;
+    }
 
-  .dashboard-panels {
-    grid-template-columns: 1fr;
-  }
+    .dashboard-hero {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-  .actions-grid {
-    flex-direction: column;
-  }
+    .quick-actions-bar {
+        flex-direction: column;
+    }
 
-  .calendar-grid {
-    grid-template-columns: 1fr;
-  }
+    .tarefas-header,
+    .categorias-header,
+    .calendar-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+    }
 
-  .info-hover-box[data-tooltip]::before {
-    display: none;
-  }
-}
+    .tarefas-cards-grid {
+        grid-template-columns: 1fr;
+    }
 
-/* Tablet (769px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  #app {
-    padding: 1.5rem 1.5rem 5rem 1.5rem;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .dashboard-panels {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .calendar-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* Laptop (1025px - 1279px) */
-@media (min-width: 1025px) and (max-width: 1279px) {
-  .dashboard-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .calendar-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Desktop (1280px+) */
-@media (min-width: 1280px) {
-  #app {
-    max-width: 1380px;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .calendar-grid {
-    grid-template-columns: repeat(7, 1fr);
-  }
+    .view-switchers {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }

@@ -1,7 +1,9 @@
-import {
-    carregarTarefas,
-    calcularEstatisticas
-} from "../../tarefasStorage.js";
+// src/js/components/paginas/dashboard.js
+// Capítulo 8 da Apostila: Componente auto montável recebendo o elemento app
+import { carregarTarefas, calcularEstatisticas, carregarCategorias } from "../services/tarefasStorage.js";
+import { carregarUsuario } from "../services/authStorage.js";
+import { abrirModalTarefa } from "../modal/modalTarefa.js";
+import { exportarParaCalendario } from "../../../../sync.js";
 
 function saudacao() {
     const hora = new Date().getHours();
@@ -10,160 +12,205 @@ function saudacao() {
     return "Boa noite";
 }
 
-function obterProximaTarefa(tarefas) {
-    const pendentes = tarefas.filter(t => !t.concluida);
-    if (pendentes.length === 0) return null;
-    return pendentes[0];
+function obterHojeISO() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
 }
 
-function cardEstatistica(titulo, valor, classe, tooltipTexto) {
-    return `
-    <div class="stat-card ${classe} info-hover-box" data-tooltip="${tooltipTexto}">
-      <span class="stat-title">${titulo}</span>
-      <h2 class="stat-value" data-value="${valor}">0</h2>
-    </div>
-  `;
-}
-
-function dashboard() {
+async function dashboard(app) {
+    const usuario = carregarUsuario();
     const tarefas = carregarTarefas();
     const stats = calcularEstatisticas(tarefas);
-    const proxima = obterProximaTarefa(tarefas);
+    const categorias = carregarCategorias();
 
-    const page = document.createElement('div');
-    page.className = 'dashboard-container page-enter';
+    const hojeISO = obterHojeISO();
+    const tarefasHoje = tarefas.filter(t => t.data === hojeISO || !t.data);
 
-    page.innerHTML = `
-    <section class="dashboard">
+    // Agrupamento por Turnos (Manhã / Tarde / Noite)
+    const manhaTasks = tarefasHoje.filter(t => t.turno === 'manha' || (t.horario && parseInt(t.horario.split(':')[0]) < 12));
+    const tardeTasks = tarefasHoje.filter(t => t.turno === 'tarde' || (t.horario && parseInt(t.horario.split(':')[0]) >= 12 && parseInt(t.horario.split(':')[0]) < 18));
+    const noiteTasks = tarefasHoje.filter(t => t.turno === 'noite' || (t.horario && parseInt(t.horario.split(':')[0]) >= 18));
 
-      <!-- HERO DASHBOARD -->
-      <div class="dashboard-hero fade-up info-hover-box" data-tooltip="Painel de visão geral da sua semana no ClickUp Workspace. Apresenta métricas em tempo real.">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap;">
-            <div>
-                <h1>${saudacao()}, Keren 👋</h1>
-                <p>Organize sua semana com clareza, alta performance e elegância.</p>
-            </div>
-            <span class="info-badge" title="Passe o mouse ou toque para ver a função da seção">ℹ️ Função do Hero</span>
-        </div>
-      </div>
+    // Reuniões (Teams / Meet / Zoom)
+    const reunioes = tarefas.filter(t => t.provedorReuniao || t.linkReuniao || t.categoria === 'Trabalho').slice(0, 3);
 
-      <!-- GRID DE ESTATÍSTICAS DA SEMANA -->
-      <div class="dashboard-grid fade-up" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
-        ${cardEstatistica("Tarefas Hoje", stats.hoje, "primary", "Métrica de tarefas agendadas para a data atual.")}
-        ${cardEstatistica("Concluídas", stats.concluidas, "success", "Total de tarefas finalizadas na semana.")}
-        ${cardEstatistica("Reuniões", 3, "accent", "Compromissos agendados via Teams, Google ou Outlook.")}
-        ${cardEstatistica("Produtividade", `${stats.progresso}%`, "warning", "Taxa percentual de conclusão das tarefas.")}
-      </div>
+    app.innerHTML = `
+        <section class="dashboard dashboard-wrapper page-enter">
 
-      <!-- PAINÉIS LADO A LADO -->
-      <div class="dashboard-panels fade-up">
-
-        <!-- PRÓXIMA TAREFA PENDENTE -->
-        <div class="card dashboard-panel glass-card info-hover-box" data-tooltip="Exibe a tarefa prioritária agendada para ser executada a seguir.">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="color: #0F172A; font-size: 1.1rem; margin: 0; font-weight: 700;">📌 Próxima Tarefa</h3>
-            <span class="info-badge">ℹ️ Destaque</span>
-          </div>
-
-          ${proxima
-            ? `
-                <div class="next-task" style="background: #F8FAFC; padding: 16px; border-radius: 12px; border-left: 4px solid var(--primary-color);">
-                  <strong style="font-size: 1.05rem; color: #0F172A; display: block;">${proxima.titulo}</strong>
-                  <p style="color: #64748B; font-size: 0.9rem; margin: 4px 0 8px 0;">${proxima.categoria} • Prioridade ${proxima.prioridade || 'Média'}</p>
-                  <span style="font-size: 0.85rem; color: var(--primary-color); font-weight: 600;">🗓️ ${proxima.data || "Hoje"} • ⏰ ${proxima.horario || "14:00"}</span>
+            <!-- Banner Hero de Saudação e Produtividade -->
+            <div class="dashboard-hero glass">
+                <div class="hero-text">
+                    <h1>${saudacao()}, ${usuario.nome.split(' ')[0]} 👋</h1>
+                    <p>Aqui está o resumo da sua produtividade e compromissos de hoje.</p>
                 </div>
-              `
-            : `
-                <p style="color: #64748B; font-size: 0.95rem;">Nenhuma tarefa pendente no momento. 🎉</p>
-              `
-        }
-        </div>
 
-        <!-- PRÓXIMAS REUNIÕES EXTERNAS -->
-        <div class="card dashboard-panel glass-card info-hover-box" data-tooltip="Reuniões sincronizadas com Teams, Google e Outlook.">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="color: #0F172A; font-size: 1.1rem; margin: 0; font-weight: 700;">📅 Próximas Reuniões</h3>
-            <span class="info-badge">ℹ️ Sync</span>
-          </div>
+                <div class="productivity-widget card">
+                    <div class="widget-info">
+                        <span class="widget-title">Widget de Produtividade</span>
+                        <h3 class="widget-stat">${stats.concluidas} de ${stats.total} tarefas concluídas (${stats.progresso}%)</h3>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${stats.progresso}%;"></div>
+                    </div>
+                </div>
 
-          <ul class="meeting-list" style="display: flex; flex-direction: column; gap: 10px;">
-            <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge teams" style="background: #5B5FC7; color: white; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 0.75rem;">Teams</span>
-                <span style="color: #0F172A; font-weight: 600; font-size: 0.9rem;">Projeto Integrador</span>
-              </div>
-              <span style="color: #64748B; font-size: 0.85rem;">10:00</span>
-            </li>
+                <div class="quick-actions-bar">
+                    <button id="btnDashboardNovaTarefa" class="btn-primary">
+                        ➕ Nova Tarefa
+                    </button>
+                    <button id="btnSincronizarCalendarios" class="btn-secondary">
+                        🔄 Sincronizar Calendários
+                    </button>
+                </div>
+            </div>
 
-            <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge google" style="background: #EA4335; color: white; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 0.75rem;">Google</span>
-                <span style="color: #0F172A; font-weight: 600; font-size: 0.9rem;">Mentoria Frontend</span>
-              </div>
-              <span style="color: #64748B; font-size: 0.85rem;">15:30</span>
-            </li>
+            <!-- Dashboard Layout de 3 Colunas Desktop -->
+            <div class="dashboard-3columns">
 
-            <li style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #F8FAFC; border-radius: 10px; border: 1px solid #E2E8F0;">
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="badge outlook" style="background: #0078D4; color: white; padding: 4px 10px; border-radius: 8px; font-weight: 600; font-size: 0.75rem;">Outlook</span>
-                <span style="color: #0F172A; font-weight: 600; font-size: 0.9rem;">Sincronização de Sprints</span>
-              </div>
-              <span style="color: #64748B; font-size: 0.85rem;">17:00</span>
-            </li>
-          </ul>
-        </div>
+                <!-- Coluna 1: Agenda do Dia (Manhã / Tarde / Noite) -->
+                <div class="dashboard-column agenda-column card">
+                    <div class="column-header">
+                        <h2>📅 Agenda do Dia</h2>
+                        <span class="badge-count">${tarefasHoje.length} atividades</span>
+                    </div>
 
-      </div>
+                    <div class="shifts-container">
+                        <div class="shift-group">
+                            <div class="shift-title">
+                                <span>🌅 Manhã</span>
+                                <small>(05:00 - 12:00)</small>
+                            </div>
+                            <div class="shift-tasks">
+                                ${manhaTasks.length > 0 ? manhaTasks.map(t => renderMiniTask(t)).join('') : '<p class="empty-shift">Nenhuma tarefa na manhã</p>'}
+                            </div>
+                        </div>
 
-      <!-- AÇÕES RÁPIDAS -->
-      <div class="card quick-actions glass-card fade-up info-hover-box" data-tooltip="Atalhos rápidos de navegação para tarefas, calendário, categorias e configurações.">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="color: #0F172A; font-size: 1.1rem; margin: 0; font-weight: 700;">⚡ Ações Rápidas</h3>
-            <span class="info-badge">ℹ️ Atalhos</span>
-        </div>
+                        <div class="shift-group">
+                            <div class="shift-title">
+                                <span>☀️ Tarde</span>
+                                <small>(12:00 - 18:00)</small>
+                            </div>
+                            <div class="shift-tasks">
+                                ${tardeTasks.length > 0 ? tardeTasks.map(t => renderMiniTask(t)).join('') : '<p class="empty-shift">Nenhuma tarefa na tarde</p>'}
+                            </div>
+                        </div>
 
-        <div class="actions-grid" style="display: flex; gap: 12px; flex-wrap: wrap;">
-          <a href="#tarefas" class="btn-primary">
-            ➕ Gerenciar Tarefas
-          </a>
-          <a href="#calendario" class="btn-secondary">
-            📅 Agenda Semanal
-          </a>
-          <a href="#categorias" class="btn-secondary">
-            🏷️ Categorias
-          </a>
-          <a href="#configuracoes" class="btn-secondary">
-            ⚙️ Sincronização & Ajustes
-          </a>
-        </div>
-      </div>
+                        <div class="shift-group">
+                            <div class="shift-title">
+                                <span>🌙 Noite</span>
+                                <small>(18:00 - 23:59)</small>
+                            </div>
+                            <div class="shift-tasks">
+                                ${noiteTasks.length > 0 ? noiteTasks.map(t => renderMiniTask(t)).join('') : '<p class="empty-shift">Nenhuma tarefa na noite</p>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    </section>
-  `;
+                <!-- Coluna 2: Reuniões & Integrações (Teams / Meet / Zoom) -->
+                <div class="dashboard-column meetings-column card">
+                    <div class="column-header">
+                        <h2>💬 Reuniões & Integrações</h2>
+                        <span class="badge-count">${reunioes.length} agendadas</span>
+                    </div>
 
-    iniciarAnimacaoContadores(page);
-    return page;
+                    <div class="meetings-list">
+                        ${reunioes.length > 0 ? reunioes.map(r => `
+                            <div class="meeting-card glass">
+                                <div class="meeting-top">
+                                    <span class="badge-provider provider-${(r.provedorReuniao || 'Teams').toLowerCase()}">
+                                        ${r.provedorReuniao || 'Teams'}
+                                    </span>
+                                    <span class="meeting-time">⏰ ${r.horario || '14:00'}</span>
+                                </div>
+                                <h4 class="meeting-title">${r.titulo}</h4>
+                                <p class="meeting-desc">${r.descricao || 'Sem descrição'}</p>
+
+                                <div class="meeting-footer">
+                                    <span class="countdown-timer">⏳ Em breve</span>
+                                    <a href="${r.linkReuniao || 'https://teams.microsoft.com'}" target="_blank" rel="noopener" class="btn-join-call">
+                                        📞 Entrar na chamada
+                                    </a>
+                                </div>
+                            </div>
+                        `).join('') : '<p class="empty-state">Nenhuma reunião pendente para hoje.</p>'}
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Categorias & Estatísticas -->
+                <div class="dashboard-column categories-column card">
+                    <div class="column-header">
+                        <h2>📊 Categorias & Progresso</h2>
+                        <a href="#categorias" class="link-see-all">Ver todas →</a>
+                    </div>
+
+                    <div class="categories-progress-list">
+                        ${categorias.map(cat => {
+                            const catTasks = tarefas.filter(t => t.categoria === cat.nome);
+                            const catConcluidas = catTasks.filter(t => t.concluida).length;
+                            const perc = catTasks.length ? Math.round((catConcluidas / catTasks.length) * 100) : 0;
+                            return `
+                                <div class="category-progress-item">
+                                    <div class="cat-item-header">
+                                        <span class="cat-name">${cat.icone || '🏷️'} ${cat.nome}</span>
+                                        <span class="cat-perc">${perc}% (${catConcluidas}/${catTasks.length})</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: ${perc}%; background-color: ${cat.cor || '#4F46E5'};"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <div class="stat-highlights">
+                        <div class="stat-box primary">
+                            <span class="stat-label">Tarefas Hoje</span>
+                            <h3 class="stat-number">${stats.hoje}</h3>
+                        </div>
+                        <div class="stat-box success">
+                            <span class="stat-label">Concluídas</span>
+                            <h3 class="stat-number">${stats.concluidas}</h3>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    `;
+
+    // Event listeners anexados pós-render
+    const btnNova = app.querySelector('#btnDashboardNovaTarefa');
+    if (btnNova) {
+        btnNova.addEventListener('click', () => abrirModalTarefa());
+    }
+
+    const btnSync = app.querySelector('#btnSincronizarCalendarios');
+    if (btnSync) {
+        btnSync.addEventListener('click', () => {
+            if (tarefasHoje.length > 0) {
+                exportarParaCalendario(tarefasHoje[0], 'google');
+            } else {
+                alert('Nenhuma tarefa hoje para sincronizar.');
+            }
+        });
+    }
 }
 
-function iniciarAnimacaoContadores(container) {
-    const elementos = container.querySelectorAll("[data-value]");
-    elementos.forEach(elemento => {
-        const valStr = elemento.dataset.value.toString();
-        const alvo = parseInt(valStr.replace("%", ""));
-        if (isNaN(alvo)) return;
-
-        let atual = 0;
-        const incremento = Math.max(1, Math.ceil(alvo / 25));
-
-        const timer = setInterval(() => {
-            atual += incremento;
-            if (atual >= alvo) {
-                atual = alvo;
-                clearInterval(timer);
-            }
-            elemento.textContent = valStr.includes("%") ? `${atual}%` : atual;
-        }, 30);
-    });
+function renderMiniTask(t) {
+    return `
+        <div class="mini-task-card priority-${t.prioridade} ${t.concluida ? 'completed' : ''}">
+            <div class="mini-task-main">
+                <span class="mini-task-time">${t.horario || '09:00'}</span>
+                <strong class="mini-task-title">${t.titulo}</strong>
+            </div>
+            <span class="badge-priority priority-pill-${t.prioridade}">${t.prioridade}</span>
+        </div>
+    `;
 }
 
 export default {
