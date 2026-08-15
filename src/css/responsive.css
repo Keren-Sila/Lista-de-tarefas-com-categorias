@@ -1,43 +1,70 @@
-/* ==========================================================================
-   Responsive Adjustments & Touch UX
-   ========================================================================== */
+/* src/css/responsive.css */
+/* Otimizações Responsivas Mobile Fluxo */
 
-@media (max-width: 768px) {
-    body {
-        padding-bottom: 80px;
+@media (max-width: 991px) {
+    .main-stage {
+        padding: 16px 14px 85px 14px !important;
     }
 
-    .dashboard-wrapper,
-    .tarefas-page-wrapper,
-    .categorias-container,
-    .calendar-page-wrapper,
-    .perfil-container {
-        padding: 1rem 0.85rem;
+    /* Grid de Resumo horizontal rolável no mobile */
+    .fluxo-summary-grid {
+        display: flex !important;
+        overflow-x: auto;
+        gap: 12px;
+        padding-bottom: 8px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
     }
 
-    .dashboard-hero {
+    .fluxo-summary-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .kpi-card {
+        min-width: 155px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        padding: 14px;
+    }
+
+    /* Grid principal de colunas empilhado */
+    .fluxo-main-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    /* Seletor de dias da semana no mobile */
+    .weekly-days-row {
+        overflow-x: auto;
+        padding-bottom: 8px;
+        gap: 6px;
+        justify-content: flex-start !important;
+    }
+
+    .day-pill {
+        min-width: 44px;
+        flex-shrink: 0;
+    }
+
+    /* Banner motivacional no mobile */
+    .inspirational-banner {
+        padding: 16px 18px !important;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .quote-text {
+        font-size: 0.9rem !important;
+    }
+
+    /* Ajuste de formulários e cabeçalho */
+    .fluxo-header-row {
         flex-direction: column;
         align-items: stretch;
+        gap: 12px;
     }
 
-    .quick-actions-bar {
-        flex-direction: column;
-    }
-
-    .tarefas-header,
-    .categorias-header,
-    .calendar-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.85rem;
-    }
-
-    .tarefas-cards-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .view-switchers {
-        flex-direction: column;
-        align-items: stretch;
+    .fluxo-search-box {
+        width: 100% !important;
     }
 }
