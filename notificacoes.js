@@ -38,7 +38,7 @@ export function scheduleNotification(tarefa) {
     setTimeout(() => {
         new Notification("TaskFlow: Lembrete de Tarefa", {
             body: tarefa.titulo,
-            icon: "/src/img/icons/icon-192.png" // Caminho corrigido
+            icon: "./src/img/icons/icon-192.png" // Caminho corrigido
         });
     }, tempo);
 }
