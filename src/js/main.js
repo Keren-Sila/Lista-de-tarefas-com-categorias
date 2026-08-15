@@ -2,7 +2,7 @@
 // Capítulo 9 da Apostila: SPA e Roteamento por Hash
 import navbar from "./components/navbar/navbar.js";
 import roteador from "./components/rotas/rotas.js";
-import { solicitarPermissao } from "./notificacoes.js";
+import { solicitarPermissao } from "./components/services/notificacoes.js";
 
 // Passo 1: montar o menu entregando o array de rotas para a navbar
 navbar(roteador);

@@ -1,6 +1,6 @@
 // src/js/components/modal/modalTarefa.js
 import { addTask, atualizarTarefa, carregarCategorias, calcularTurno, obterDiaSemana } from '../services/tarefasStorage.js';
-import { scheduleNotification } from './notificacoes.js';
+import { scheduleNotification } from '../services/notificacoes.js';
 
 export function abrirModalTarefa(tarefaParaEditar = null, onSaveCallback = null) {
     let modalExistente = document.getElementById('modal-tarefa-backdrop');

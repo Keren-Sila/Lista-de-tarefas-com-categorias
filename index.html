@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <title>TaskFlow - Smart Weekly Planner & Productivity App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js" crossorigin="anonymous"></script>
+    <title>Fluxo - Se organize. Realize.</title>
 
     <!-- PWA & Mobile Meta Tags -->
     <link rel="manifest" href="./manifest.json">
@@ -53,7 +53,7 @@
         if ("serviceWorker" in navigator) {
             window.addEventListener("load", async () => {
                 try {
-                    await navigator.serviceWorker.register("/service-worker.js");
+                    await navigator.serviceWorker.register("./service-worker.js");
                     console.log("Service Worker registrado");
                 } catch (e) {
                     console.error("Falha ao registrar o Service Worker:", e);
