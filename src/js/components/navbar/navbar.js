@@ -1,118 +1,119 @@
 // src/js/components/navbar/navbar.js
+// Capítulo 5 e 8 da Apostila - Navbar orientada a dados a partir do array de rotas
 import { carregarUsuario } from '../services/authStorage.js';
 import { abrirModalTarefa } from '../modal/modalTarefa.js';
 
 export default function navbar(item_menu) {
-    const sidebarContainer = document.getElementById('sidebar');
+    const navbarContainer = document.getElementById('navbar');
     const mobileTabsContainer = document.querySelector('.mobile-tabs');
 
+    if (!navbarContainer) return;
+
+    // --- Desktop Navbar ---
+    const navLinksHTML = item_menu
+        .filter(item => item.url !== '#login' && item.url !== '#perfil')
+        .map(item => `
+            <li class="navbar-item">
+                <a href="${item.url}" class="navbar-link">${item.label}</a>
+            </li>
+        `).join('');
+
     const u = carregarUsuario();
-    const avatarPadrao = `https://ui-avatars.com/api/?name=${encodeURIComponent(u.nome)}&background=7C5CFF&color=fff&size=64`;
+    const avatarPadrao = `https://ui-avatars.com/api/?name=${encodeURIComponent(u.nome)}&background=4F46E5&color=fff&size=64`;
 
-    const menuItensFluxo = [
-        { label: 'Início', url: '#dashboard', icon: 'layout-dashboard' },
-        { label: 'Tarefas', url: '#tarefas', icon: 'check-square' },
-        { label: 'Calendário', url: '#calendario', icon: 'calendar' },
-        { label: 'Planejamento', url: '#planejamento', icon: 'kanban' },
-        { label: 'Categorias', url: '#categorias', icon: 'layers' },
-        { label: 'Estatísticas', url: '#estatisticas', icon: 'bar-chart-3' },
-        { label: 'Notas', url: '#notas', icon: 'file-text' },
-        { label: 'Sobre', url: '#sobre', icon: 'info' },
-        { label: 'Configurações', url: '#perfil', icon: 'settings' }
-    ];
+    navbarContainer.innerHTML = `
+        <nav class="navbar glass">
+            <a href="#dashboard" class="navbar-brand" data-tooltip="Painel Principal TaskFlow">
+                <i data-lucide="zap" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;"></i> Task<span>Flow</span>
+            </a>
 
-    // --- Sidebar Desktop ---
-    if (sidebarContainer) {
-        sidebarContainer.innerHTML = `
-            <div class="sidebar-top">
-                <a href="#dashboard" class="sidebar-brand">
-                    <div class="sidebar-brand-icon">
-                        <i data-lucide="check-circle-2"></i>
-                    </div>
-                    <div>
-                        <span class="sidebar-brand-title">Fluxo</span>
-                        <span class="sidebar-brand-tagline">Se organize. Realize.</span>
-                    </div>
-                </a>
+            <ul class="navbar-menu">
+                ${navLinksHTML}
+            </ul>
 
-                <button id="btnSidebarNovaTarefa" class="sidebar-btn-new">
-                    <i data-lucide="plus" style="width:18px;height:18px;"></i>
-                    <span>Nova tarefa</span>
+            <div class="navbar-right-actions">
+                <button id="btnNavNovaTarefa" class="btn-primary btn-sm btn-nav-new" data-tooltip="Criar nova tarefa rapidamente">
+                    <i data-lucide="plus" style="width:16px;height:16px;vertical-align:middle;"></i> Nova Tarefa
                 </button>
 
-                <ul class="sidebar-menu">
-                    ${menuItensFluxo.map(item => `
-                        <li class="sidebar-item">
-                            <a href="${item.url}" class="sidebar-link" data-url="${item.url}">
-                                <i data-lucide="${item.icon}"></i>
-                                <span>${item.label}</span>
-                            </a>
-                        </li>
-                    `).join('')}
-                </ul>
+                <a href="#perfil" class="navbar-user-badge" id="navbarUserBadge" data-tooltip="Ver e editar meu perfil">
+                    <img src="${u.avatar || avatarPadrao}" alt="${u.nome}" class="navbar-avatar">
+                    <span class="navbar-username">${u.nome.split(' ')[0]}</span>
+                </a>
             </div>
+        </nav>
+    `;
 
-            <a href="#perfil" class="sidebar-user-card" id="sidebarUserBadge">
-                <img src="${u.avatar || avatarPadrao}" alt="${u.nome}" class="sidebar-user-avatar">
-                <div class="sidebar-user-info">
-                    <span class="sidebar-user-name">${u.nome.split(' ')[0]}</span>
-                    <span class="sidebar-user-role">Meu perfil</span>
-                </div>
-            </a>
-        `;
-
-        const btnSidebarNova = sidebarContainer.querySelector('#btnSidebarNovaTarefa');
-        if (btnSidebarNova) {
-            btnSidebarNova.addEventListener('click', () => abrirModalTarefa());
-        }
+    // Listener para o botão Nova Tarefa na Navbar
+    const btnNavNova = navbarContainer.querySelector('#btnNavNovaTarefa');
+    if (btnNavNova) {
+        btnNavNova.addEventListener('click', () => abrirModalTarefa());
     }
 
-    // --- Mobile Bottom Navigation Bar (Dock Fiel à Referência) ---
+    // --- Mobile Bottom Navigation Bar ---
     if (mobileTabsContainer) {
         mobileTabsContainer.innerHTML = `
-            <a href="#dashboard" class="mobile-tab" data-tooltip="Início">
-                <i data-lucide="layout-dashboard"></i>
-                <span>Início</span>
+            <a href="#dashboard" class="mobile-tab" data-tooltip="Home">
+                <span class="icon"><i data-lucide="home"></i></span>
+                <span>Home</span>
             </a>
-            <a href="#tarefas" class="mobile-tab" data-tooltip="Tarefas">
-                <i data-lucide="check-square"></i>
-                <span>Tarefas</span>
-            </a>
-            <button id="btnMobileCenterFAB" class="mobile-center-fab" title="Nova Tarefa">
-                <i data-lucide="plus"></i>
-            </button>
             <a href="#calendario" class="mobile-tab" data-tooltip="Calendário">
-                <i data-lucide="calendar"></i>
+                <span class="icon"><i data-lucide="calendar"></i></span>
                 <span>Calendário</span>
             </a>
-            <a href="#perfil" class="mobile-tab" data-tooltip="Mais">
-                <i data-lucide="user"></i>
-                <span>Mais</span>
+            <a href="#categorias" class="mobile-tab" data-tooltip="Categorias">
+                <span class="icon"><i data-lucide="tag"></i></span>
+                <span>Categorias</span>
+            </a>
+            <a href="#perfil" class="mobile-tab" data-tooltip="Meu Perfil">
+                <span class="icon"><i data-lucide="user"></i></span>
+                <span>Perfil</span>
             </a>
         `;
-
-        const fabCenter = mobileTabsContainer.querySelector('#btnMobileCenterFAB');
-        if (fabCenter) {
-            fabCenter.addEventListener('click', () => abrirModalTarefa());
-        }
     }
 
+    // --- Floating Action Button (FAB "+") Mobile ---
+    let fab = document.getElementById('btnMobileFAB');
+    if (!fab) {
+        fab = document.createElement('button');
+        fab.id = 'btnMobileFAB';
+        fab.className = 'mobile-fab-btn';
+        fab.innerHTML = '<i data-lucide="plus"></i>';
+        fab.setAttribute('data-tooltip', 'Nova Tarefa');
+        fab.title = 'Criar Nova Tarefa';
+        fab.addEventListener('click', () => abrirModalTarefa());
+        document.body.appendChild(fab);
+    }
+
+    if (window.renderLucideIcons) window.renderLucideIcons();
+
+    // Função para atualizar o link ativo
     const updateActiveLink = () => {
         const currentHash = window.location.hash || '#dashboard';
 
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            const isMatch = link.getAttribute('href') === currentHash || (currentHash === '#inicio' && link.getAttribute('href') === '#dashboard');
-            link.classList.toggle('active', isMatch);
+        document.querySelectorAll('.navbar-link').forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === currentHash);
         });
 
         document.querySelectorAll('.mobile-tab').forEach(tab => {
-            const isMatch = tab.getAttribute('href') === currentHash;
-            tab.classList.toggle('active', isMatch);
+            tab.classList.toggle('active', tab.getAttribute('href') === currentHash);
         });
+
+        const userBadge = document.getElementById('navbarUserBadge');
+        if (userBadge) {
+            userBadge.classList.toggle('active', currentHash === '#perfil');
+        }
     };
 
     window.addEventListener('hashchange', updateActiveLink);
+    window.addEventListener('load', updateActiveLink);
     updateActiveLink();
+}
 
-    if (window.renderLucideIcons) window.renderLucideIcons();
+export function createNavbar(item_menu) {
+    if (!item_menu) {
+        import('../rotas/rotas.js').then(m => navbar(m.default));
+    } else {
+        navbar(item_menu);
+    }
 }

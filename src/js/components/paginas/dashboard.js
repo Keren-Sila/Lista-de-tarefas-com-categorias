@@ -1,252 +1,250 @@
 // src/js/components/paginas/dashboard.js
-import { carregarTarefas, calcularEstatisticas } from "../services/tarefasStorage.js";
+// Capítulo 8 da Apostila: Componente auto montável recebendo o elemento app
+import { carregarTarefas, calcularEstatisticas, carregarCategorias } from "../services/tarefasStorage.js";
 import { carregarUsuario } from "../services/authStorage.js";
 import { abrirModalTarefa } from "../modal/modalTarefa.js";
+import { exportarParaCalendario } from "../../../../sync.js";
 
-function obterDataExtensa() {
-    const agora = new Date();
-    const dataStr = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-    return dataStr.charAt(0).toUpperCase() + dataStr.slice(1);
+function saudacao() {
+    const hora = new Date().getHours();
+    if (hora < 12) return "Bom dia";
+    if (hora < 18) return "Boa tarde";
+    return "Boa noite";
+}
+
+function obterHojeISO() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
 }
 
 async function dashboard(app) {
     const usuario = carregarUsuario();
     const tarefas = carregarTarefas();
     const stats = calcularEstatisticas(tarefas);
+    const categorias = carregarCategorias();
+    const agora = new Date();
+    const inicioSemana = new Date(agora); inicioSemana.setHours(0, 0, 0, 0); inicioSemana.setDate(agora.getDate() - ((agora.getDay() + 6) % 7));
+    const fimSemana = new Date(inicioSemana); fimSemana.setDate(inicioSemana.getDate() + 7);
+    const tarefasSemana = tarefas.filter(t => t.data && new Date(`${t.data}T00:00:00`) >= inicioSemana && new Date(`${t.data}T00:00:00`) < fimSemana);
+    const concluidasSemana = tarefasSemana.filter(t => t.concluida).length;
+    const progressoSemana = tarefasSemana.length ? Math.round((concluidasSemana / tarefasSemana.length) * 100) : 0;
+    const dataExtensa = agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-    const dataExtensa = obterDataExtensa();
-    const proximasTarefas = tarefas.slice(0, 4);
+    const hojeISO = obterHojeISO();
+    const tarefasHoje = tarefas.filter(t => t.data === hojeISO || !t.data);
 
-    const corCategorias = {
-        'Trabalho': '#7C5CFF',
-        'Estudos': '#FFD166',
-        'Saúde': '#63D9B1',
-        'Pessoal': '#FF8FA3',
-        'Faculdade': '#5BA8FF'
-    };
+    // Agrupamento por Turnos (Manhã / Tarde / Noite)
+    const manhaTasks = tarefasHoje.filter(t => t.turno === 'manha' || (t.horario && parseInt(t.horario.split(':')[0]) < 12));
+    const tardeTasks = tarefasHoje.filter(t => t.turno === 'tarde' || (t.horario && parseInt(t.horario.split(':')[0]) >= 12 && parseInt(t.horario.split(':')[0]) < 18));
+    const noiteTasks = tarefasHoje.filter(t => t.turno === 'noite' || (t.horario && parseInt(t.horario.split(':')[0]) >= 18));
+
+    // Reuniões (Teams / Meet / Zoom)
+    const reunioes = tarefas.filter(t => t.provedorReuniao || t.linkReuniao || t.categoria === 'Trabalho').slice(0, 3);
 
     app.innerHTML = `
-        <section class="dashboard-fluxo-wrapper page-enter">
+        <section class="dashboard dashboard-wrapper page-enter">
 
-            <!-- Botão de Nova Tarefa Visível no Mobile (Idêntico ao Mockup) -->
-            <button id="btnMobileTopNova" class="mobile-top-btn-new">
-                <i data-lucide="plus" style="width:20px;height:20px;"></i>
-                <span>+ Nova tarefa</span>
-            </button>
-
-            <!-- Header Neutro com Saudação & Busca -->
-            <div class="fluxo-header-row">
-                <div class="fluxo-greeting">
-                    <h1>Olá! Que bom ter você aqui.</h1>
-                    <p>${dataExtensa}</p>
+            <!-- Banner Hero de Saudação e Produtividade -->
+            <div class="dashboard-hero glass">
+                <div class="hero-text">
+                    <div class="badge-status mb-2">
+                        <span class="badge-dot"></span> Modo Produtivo Ativo
+                    </div>
+                    <h1>${saudacao()}, ${usuario.nome.split(' ')[0]} <i data-lucide="sparkles" style="width:26px;height:26px;vertical-align:middle;margin-left:4px;color:#ffffff;"></i></h1>
+                    <p>${dataExtensa.charAt(0).toUpperCase() + dataExtensa.slice(1)}<br><strong>Você concluiu ${progressoSemana}% das tarefas desta semana.</strong></p>
                 </div>
 
-                <div class="fluxo-header-actions">
-                    <div class="fluxo-search-box">
-                        <i data-lucide="search"></i>
-                        <input type="text" id="inputSearchHeader" placeholder="Buscar tarefas...">
+                <div class="productivity-widget card" data-tooltip="Seu progresso acumulado">
+                    <div class="widget-info">
+                        <span class="widget-title">Widget de Produtividade</span>
+                        <h3 class="widget-stat">${stats.concluidas} de ${stats.total} tarefas concluídas (${stats.progresso}%)</h3>
                     </div>
-                    <button class="fluxo-btn-icon" data-tooltip="Notificações" title="Notificações">
-                        <i data-lucide="bell"></i>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${progressoSemana}%;"></div>
+                    </div>
+                </div>
+
+                <div class="quick-actions-bar">
+                    <button id="btnSincronizarCalendarios" class="btn-secondary" data-tooltip="Exportar eventos para seu aplicativo de calendário">
+                        <i data-lucide="refresh-cw" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Sincronizar Calendários
                     </button>
                 </div>
             </div>
 
-            <!-- Grid de Resumo do Dia (KPIs Mobile Scrollable) -->
-            <div class="fluxo-summary-grid">
-                <div class="kpi-card">
-                    <div class="kpi-icon-badge lavanda">
-                        <i data-lucide="check-circle-2"></i>
-                    </div>
-                    <div class="kpi-info">
-                        <strong>12</strong>
-                        <span class="kpi-label">Tarefas hoje</span>
-                        <span class="kpi-subtext">4 concluídas</span>
-                    </div>
+            <div class="dashboard-metrics">
+                <div class="metric-card">
+                    <span class="metric-label">Hoje</span>
+                    <strong>${stats.hoje}</strong>
+                    <small>tarefas no dia</small>
                 </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-icon-badge blue">
-                        <i data-lucide="calendar"></i>
-                    </div>
-                    <div class="kpi-info">
-                        <strong>5</strong>
-                        <span class="kpi-label">Eventos</span>
-                        <span class="kpi-subtext">esta semana</span>
-                    </div>
+                <div class="metric-card">
+                    <span class="metric-label">Em andamento</span>
+                    <strong>${Math.max(stats.total - stats.concluidas, 0)}</strong>
+                    <small>pendências ativas</small>
                 </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-icon-badge mint">
-                        <i data-lucide="trending-up"></i>
-                    </div>
-                    <div class="kpi-info">
-                        <strong>68%</strong>
-                        <span class="kpi-label">Produtividade</span>
-                        <span class="kpi-subtext">esta semana</span>
-                    </div>
-                </div>
-
-                <div class="kpi-card">
-                    <div class="kpi-icon-badge yellow">
-                        <i data-lucide="star"></i>
-                    </div>
-                    <div class="kpi-info">
-                        <strong>7</strong>
-                        <span class="kpi-label">Sequência</span>
-                        <span class="kpi-subtext">dias em foco</span>
-                    </div>
+                <div class="metric-card accent">
+                    <span class="metric-label">Progresso</span>
+                    <strong>${progressoSemana}%</strong>
+                    <small>da semana concluída</small>
                 </div>
             </div>
 
-            <!-- Grid Principal de 3 Colunas (Empilhado no Mobile) -->
-            <div class="fluxo-main-grid">
+            <!-- Dashboard Layout de 3 Colunas Desktop -->
+            <div class="dashboard-3columns">
 
-                <!-- Coluna 1: Próximas Tarefas -->
-                <div class="fluxo-column-card">
-                    <div class="column-card-header">
-                        <h2>Próximas tarefas</h2>
-                        <a href="#tarefas">Ver todas</a>
+                <!-- Coluna 1: Agenda do Dia (Manhã / Tarde / Noite) -->
+                <div class="dashboard-column agenda-column card">
+                    <div class="column-header">
+                        <h2><i data-lucide="calendar" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Agenda do Dia</h2>
+                        <span class="badge-count">${tarefasHoje.length} atividades</span>
                     </div>
 
-                    <div class="upcoming-tasks-list">
-                        ${proximasTarefas.length > 0 ? proximasTarefas.map(t => `
-                            <div class="upcoming-task-item">
-                                <div class="task-item-left">
-                                    <span class="category-indicator-bar" style="background-color: ${corCategorias[t.categoria] || '#7C5CFF'};"></span>
-                                    <div class="task-item-info">
-                                        <strong>${t.titulo}</strong>
-                                        <small>${t.categoria || 'Geral'}</small>
+                    <div class="shifts-container">
+                        <div class="shift-group">
+                            <div class="shift-title">
+                                <span><i data-lucide="sun" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Manhã</span>
+                                <small>(05:00 - 12:00)</small>
+                            </div>
+                            <div class="shift-tasks">
+                                ${manhaTasks.length > 0 ? manhaTasks.map(t => renderMiniTask(t)).join('') : '<p class="empty-shift">Nenhuma tarefa na manhã</p>'}
+                            </div>
+                        </div>
+
+                        <div class="shift-group">
+                            <div class="shift-title">
+                                <span><i data-lucide="sun-medium" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Tarde</span>
+                                <small>(12:00 - 18:00)</small>
+                            </div>
+                            <div class="shift-tasks">
+                                ${tardeTasks.length > 0 ? tardeTasks.map(t => renderMiniTask(t)).join('') : '<p class="empty-shift">Nenhuma tarefa na tarde</p>'}
+                            </div>
+                        </div>
+
+                        <div class="shift-group">
+                            <div class="shift-title">
+                                <span><i data-lucide="moon" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Noite</span>
+                                <small>(18:00 - 23:59)</small>
+                            </div>
+                            <div class="shift-tasks">
+                                ${noiteTasks.length > 0 ? noiteTasks.map(t => renderMiniTask(t)).join('') : '<p class="empty-shift">Nenhuma tarefa na noite</p>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 2: Reuniões & Integrações (Teams / Meet / Zoom) -->
+                <div class="dashboard-column meetings-column card">
+                    <div class="column-header">
+                        <h2><i data-lucide="video" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Reuniões & Integrações</h2>
+                        <span class="badge-count">${reunioes.length} agendadas</span>
+                    </div>
+
+                    <div class="meetings-list">
+                        ${reunioes.length > 0 ? reunioes.map(r => `
+                            <div class="meeting-card glass">
+                                <div class="meeting-top">
+                                    <span class="badge-provider provider-${(r.provedorReuniao || 'Teams').toLowerCase()}">
+                                        ${r.provedorReuniao || 'Teams'}
+                                    </span>
+                                    <span class="meeting-time"><i data-lucide="clock" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> ${r.horario || '14:00'}</span>
+                                </div>
+                                <h4 class="meeting-title">${r.titulo}</h4>
+                                <p class="meeting-desc">${r.descricao || 'Sem descrição'}</p>
+
+                                <div class="meeting-footer">
+                                    <span class="countdown-timer" data-horario="${r.data || hojeISO}T${r.horario || '09:00'}"><i data-lucide="timer" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Calculando...</span>
+                                    <a href="${r.linkReuniao || 'https://teams.microsoft.com'}" target="_blank" rel="noopener" class="btn-join-call">
+                                        <i data-lucide="phone-call" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Entrar na chamada
+                                    </a>
+                                </div>
+                            </div>
+                        `).join('') : '<p class="empty-state">Nenhuma reunião pendente para hoje.</p>'}
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Categorias & Estatísticas -->
+                <div class="dashboard-column categories-column card">
+                    <div class="column-header">
+                        <h2><i data-lucide="bar-chart-3" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Categorias & Progresso</h2>
+                        <a href="#categorias" class="link-see-all">Ver todas →</a>
+                    </div>
+
+                    <div class="categories-progress-list">
+                        ${categorias.map(cat => {
+                            const catTasks = tarefas.filter(t => t.categoria === cat.nome);
+                            const catConcluidas = catTasks.filter(t => t.concluida).length;
+                            const perc = catTasks.length ? Math.round((catConcluidas / catTasks.length) * 100) : 0;
+                            return `
+                                <div class="category-progress-item">
+                                    <div class="cat-item-header">
+                                        <span class="cat-name">${cat.icone || '🏷️'} ${cat.nome}</span>
+                                        <span class="cat-perc">${perc}% (${catConcluidas}/${catTasks.length})</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: ${perc}%; background-color: ${cat.cor || '#4F46E5'};"></div>
                                     </div>
                                 </div>
-                                <span class="task-item-time">${t.horario || '09:00'}</span>
-                            </div>
-                        `).join('') : `
-                            <div class="upcoming-task-item">
-                                <div class="task-item-left">
-                                    <span class="category-indicator-bar" style="background-color: #7C5CFF;"></span>
-                                    <div class="task-item-info">
-                                        <strong>Reunião com a equipe de design</strong>
-                                        <small>Trabalho</small>
-                                    </div>
-                                </div>
-                                <span class="task-item-time">09:00</span>
-                            </div>
-                            <div class="upcoming-task-item">
-                                <div class="task-item-left">
-                                    <span class="category-indicator-bar" style="background-color: #FFD166;"></span>
-                                    <div class="task-item-info">
-                                        <strong>Estudar JavaScript avançado</strong>
-                                        <small>Estudos</small>
-                                    </div>
-                                </div>
-                                <span class="task-item-time">14:00</span>
-                            </div>
-                            <div class="upcoming-task-item">
-                                <div class="task-item-left">
-                                    <span class="category-indicator-bar" style="background-color: #63D9B1;"></span>
-                                    <div class="task-item-info">
-                                        <strong>Academia</strong>
-                                        <small>Saúde</small>
-                                    </div>
-                                </div>
-                                <span class="task-item-time">18:00</span>
-                            </div>
-                        `}
-                    </div>
-                </div>
-
-                <!-- Coluna 2: Planejamento Semanal em Blocos -->
-                <div class="fluxo-column-card">
-                    <div class="column-card-header">
-                        <h2>Planejamento semanal</h2>
-                        <a href="#planejamento">Ver semana completa</a>
+                            `;
+                        }).join('')}
                     </div>
 
-                    <div class="weekly-days-row">
-                        <div class="day-pill">SEG<span>11</span></div>
-                        <div class="day-pill">TER<span>12</span></div>
-                        <div class="day-pill active">QUA<strong>13</strong></div>
-                        <div class="day-pill">QUI<span>14</span></div>
-                        <div class="day-pill">SEX<span>15</span></div>
-                        <div class="day-pill">SÁB<span>16</span></div>
-                        <div class="day-pill">DOM<span>17</span></div>
-                    </div>
-
-                    <div class="weekly-blocks-grid">
-                        <div class="weekly-block-item lavanda">
-                            <span class="weekly-block-title">Reunião de projeto</span>
-                            <span class="weekly-block-time">09:00 - 10:30</span>
+                    <div class="stat-highlights">
+                        <div class="stat-box primary">
+                            <span class="stat-label">Tarefas Hoje</span>
+                            <h3 class="stat-number">${stats.hoje}</h3>
                         </div>
-                        <div class="weekly-block-item coral">
-                            <span class="weekly-block-title">Entrega do relatório</span>
-                            <span class="weekly-block-time">até 15:00</span>
-                        </div>
-                        <div class="weekly-block-item yellow">
-                            <span class="weekly-block-title">Workshop</span>
-                            <span class="weekly-block-time">14:00 - 17:00</span>
-                        </div>
-                        <div class="weekly-block-item mint">
-                            <span class="weekly-block-title">Corrida no parque</span>
-                            <span class="weekly-block-time">07:00 - 08:00</span>
+                        <div class="stat-box success">
+                            <span class="stat-label">Concluídas</span>
+                            <h3 class="stat-number">${stats.concluidas}</h3>
                         </div>
                     </div>
                 </div>
 
-                <!-- Coluna 3: Calendário Mensal Compacto -->
-                <div class="fluxo-column-card">
-                    <div class="mini-calendar-header">
-                        <span>Calendário</span>
-                        <div>
-                            <span style="color: #6B7280; font-size: 0.8rem; margin-right: 8px;">Agosto 2026</span>
-                            <button class="btn-icon btn-sm" style="border:none;background:transparent;cursor:pointer;">‹</button>
-                            <button class="btn-icon btn-sm" style="border:none;background:transparent;cursor:pointer;">›</button>
-                        </div>
-                    </div>
-
-                    <div class="mini-calendar-grid">
-                        <span class="cal-day-head">D</span><span class="cal-day-head">S</span><span class="cal-day-head">T</span><span class="cal-day-head">Q</span><span class="cal-day-head">Q</span><span class="cal-day-head">S</span><span class="cal-day-head">S</span>
-                        <span class="cal-day-cell other-month">27</span><span class="cal-day-cell other-month">28</span><span class="cal-day-cell other-month">29</span><span class="cal-day-cell other-month">30</span><span class="cal-day-cell other-month">31</span><span class="cal-day-cell">1</span><span class="cal-day-cell">2</span>
-                        <span class="cal-day-cell">3</span><span class="cal-day-cell">4</span><span class="cal-day-cell">5</span><span class="cal-day-cell">6</span><span class="cal-day-cell">7</span><span class="cal-day-cell">8</span><span class="cal-day-cell">9</span>
-                        <span class="cal-day-cell">10</span><span class="cal-day-cell">11</span><span class="cal-day-cell">12</span><span class="cal-day-cell active">13</span><span class="cal-day-cell">14</span><span class="cal-day-cell">15</span><span class="cal-day-cell">16</span>
-                    </div>
-
-                    <div class="mini-agenda-section">
-                        <div class="mini-agenda-title">Hoje - 13 de agosto</div>
-                        <div class="mini-agenda-item">
-                            <span class="mini-agenda-time">09:00</span>
-                            <span class="mini-agenda-desc">Reunião com a equipe</span>
-                        </div>
-                        <div class="mini-agenda-item">
-                            <span class="mini-agenda-time">14:00</span>
-                            <span class="mini-agenda-desc">Estudar JavaScript</span>
-                        </div>
-                        <a href="#calendario" style="display:inline-block; font-size:0.75rem; color:#7C5CFF; font-weight:600; margin-top:8px; text-decoration:none;">Ver dia completo →</a>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Área Inspiracional com Frase Motivacional -->
-            <div class="inspirational-banner">
-                <div class="quote-left">
-                    <span class="quote-mark">“</span>
-                    <span class="quote-text">Pequenas ações diárias, grandes transformações.</span>
-                </div>
-                <div class="quote-illustration">
-                    <i data-lucide="sparkles"></i>
-                </div>
             </div>
 
         </section>
     `;
 
-    const btnTopNova = app.querySelector('#btnMobileTopNova');
-    if (btnTopNova) {
-        btnTopNova.addEventListener('click', () => abrirModalTarefa());
+    // Event listeners anexados pós-render
+    const btnNova = app.querySelector('#btnDashboardNovaTarefa');
+    if (btnNova) {
+        btnNova.addEventListener('click', () => abrirModalTarefa());
     }
 
-    if (window.renderLucideIcons) window.renderLucideIcons();
+    const btnSync = app.querySelector('#btnSincronizarCalendarios');
+    atualizarContadores(app);
+
+    if (btnSync) {
+        btnSync.addEventListener('click', () => {
+            if (tarefasHoje.length > 0) {
+                exportarParaCalendario(tarefasHoje[0], 'google');
+            } else {
+                alert('Nenhuma tarefa hoje para sincronizar.');
+            }
+        });
+    }
+}
+
+function renderMiniTask(t) {
+    const prioridadeLabels = {
+        urgente: '<i data-lucide="alert-circle" style="width:12px;height:12px;color:#ef4444;vertical-align:middle;margin-right:3px;"></i> Urgente',
+        alta: '<i data-lucide="alert-triangle" style="width:12px;height:12px;color:#f97316;vertical-align:middle;margin-right:3px;"></i> Alta',
+        media: '<i data-lucide="minus" style="width:12px;height:12px;color:#eab308;vertical-align:middle;margin-right:3px;"></i> Média',
+        baixa: '<i data-lucide="arrow-down" style="width:12px;height:12px;color:#10b981;vertical-align:middle;margin-right:3px;"></i> Baixa'
+    };
+
+    return `
+        <div class="mini-task-card priority-${t.prioridade} ${t.concluida ? 'completed' : ''}">
+            <div class="mini-task-main">
+                <span class="mini-task-time">${t.horario || '09:00'}</span>
+                <strong class="mini-task-title">${t.titulo}</strong>
+            </div>
+            <span class="priority-pill priority-pill-${t.prioridade}">${prioridadeLabels[t.prioridade] || t.prioridade}</span>
+        </div>
+    `;
 }
 
 export default {
@@ -254,3 +252,13 @@ export default {
     label: "Dashboard",
     pagina: dashboard
 };
+function atualizarContadores(app) {
+    const atualizar = () => {
+        app.querySelectorAll('[data-horario]').forEach(item => {
+            const quando = new Date(item.dataset.horario).getTime(); const minutos = Math.max(0, Math.ceil((quando - Date.now()) / 60000));
+            item.innerHTML = minutos ? `<i data-lucide="timer" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Em ${minutos} min` : '<i data-lucide="timer" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Horário da reunião';
+        });
+        if (window.renderLucideIcons) window.renderLucideIcons();
+    };
+    atualizar(); setInterval(atualizar, 60000);
+}

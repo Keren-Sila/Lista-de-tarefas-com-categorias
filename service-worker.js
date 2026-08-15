@@ -1,4 +1,4 @@
-const CACHE = "fluxo-v1";
+const CACHE = "fluxo-v2";
 
 const ASSETS = [
     "./",
@@ -6,7 +6,6 @@ const ASSETS = [
     "./manifest.json",
 
     "./src/css/microframework.css",
-    "./src/css/sidebar.css",
     "./src/css/dashboard.css",
     "./src/css/tarefas.css",
     "./src/css/navbar.css",
@@ -18,38 +17,39 @@ const ASSETS = [
     "./src/css/calendario.css",
     "./src/css/navbar-mobile.css",
     "./src/css/premium.css",
-    "./src/css/chatbot.css",
 
     "./src/js/main.js",
     "./src/js/rotas.js",
     "./src/js/components/rotas/rotas.js",
     "./src/js/components/navbar/navbar.js",
     "./src/js/components/modal/modalTarefa.js",
-    "./src/js/components/chatbot/chatbotWidget.js",
-    "./src/js/components/services/chatbotService.js",
+    "./src/js/components/services/api.js",
+    "./src/js/components/services/apiCache.js",
+    "./src/js/components/services/authStorage.js",
+    "./src/js/components/services/notificacoes.js",
     "./src/js/components/services/storageStrategy.js",
     "./src/js/components/services/tarefasStorage.js",
-    "./src/js/components/services/authStorage.js",
     "./src/js/components/paginas/inicio.js",
     "./src/js/components/paginas/dashboard.js",
     "./src/js/components/paginas/tarefas.js",
     "./src/js/components/paginas/categorias.js",
     "./src/js/components/paginas/calendario.js",
-    "./src/js/components/paginas/planejamento.js",
-    "./src/js/components/paginas/estatisticas.js",
-    "./src/js/components/paginas/notas.js",
-    "./src/js/components/paginas/sobre.js",
     "./src/js/components/paginas/login.js",
     "./src/js/components/paginas/perfil.js",
     "./src/js/components/paginas/relatorios.js",
 
+    "./sync.js",
     "./notificacoes.js"
 ];
 
 self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(CACHE)
-            .then(cache => cache.addAll(ASSETS))
+            .then(cache => {
+                return Promise.allSettled(
+                    ASSETS.map(asset => cache.add(asset).catch(err => console.warn(`Falha ao cachear ${asset}:`, err)))
+                );
+            })
             .then(() => self.skipWaiting())
     );
 });
