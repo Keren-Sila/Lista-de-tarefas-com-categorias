@@ -5,11 +5,11 @@ const TAREFAS_KEY = 'taskflow_tarefas';
 const CATEGORIAS_KEY = 'taskflow_categorias';
 
 export const CATEGORIAS_PADRAO = [
-    { nome: 'Trabalho', cor: '#4F46E5', icone: '💼' },
-    { nome: 'Faculdade', cor: '#0284C7', icone: '🎓' },
-    { nome: 'Estudos', cor: '#F59E0B', icone: '📚' },
-    { nome: 'Pessoal', cor: '#EC4899', icone: '👤' },
-    { nome: 'Saúde', cor: '#10B981', icone: '🌿' }
+    { nome: 'Trabalho', cor: '#4F46E5', icone: '<i data-lucide="briefcase"></i>' },
+    { nome: 'Faculdade', cor: '#0284C7', icone: '<i data-lucide="graduation-cap"></i>' },
+    { nome: 'Estudos', cor: '#F59E0B', icone: '<i data-lucide="book-open"></i>' },
+    { nome: 'Pessoal', cor: '#EC4899', icone: '<i data-lucide="user"></i>' },
+    { nome: 'Saúde', cor: '#10B981', icone: '<i data-lucide="heart-pulse"></i>' }
 ];
 
 export function calcularTurno(horario) {
@@ -194,17 +194,42 @@ export function calcularEstatisticas(tarefas) {
     };
 }
 
+export function normalizarIconeLucide(icone) {
+    if (!icone) return '<i data-lucide="tag"></i>';
+    if (icone.includes('data-lucide')) return icone;
+    const mapa = {
+        '💼': '<i data-lucide="briefcase"></i>',
+        '🎓': '<i data-lucide="graduation-cap"></i>',
+        '📚': '<i data-lucide="book-open"></i>',
+        '👤': '<i data-lucide="user"></i>',
+        '🌿': '<i data-lucide="heart-pulse"></i>',
+        '🏷️': '<i data-lucide="tag"></i>',
+        '🚀': '<i data-lucide="rocket"></i>',
+        '💰': '<i data-lucide="dollar-sign"></i>',
+        '🎨': '<i data-lucide="palette"></i>',
+        '📌': '<i data-lucide="pin"></i>'
+    };
+    return mapa[icone.trim()] || `<i data-lucide="tag"></i>`;
+}
+
 export function carregarCategorias() {
+    let cats;
     if (!LocalStorage.has(CATEGORIAS_KEY)) {
         LocalStorage.set(CATEGORIAS_KEY, CATEGORIAS_PADRAO);
-        return CATEGORIAS_PADRAO;
+        cats = CATEGORIAS_PADRAO;
+    } else {
+        cats = LocalStorage.get(CATEGORIAS_KEY) || CATEGORIAS_PADRAO;
     }
-    return LocalStorage.get(CATEGORIAS_KEY) || CATEGORIAS_PADRAO;
+    return cats.map(c => ({
+        ...c,
+        icone: normalizarIconeLucide(c.icone)
+    }));
 }
 
 export function salvarCategoria(novaCat) {
-    const cats = carregarCategorias();
+    const cats = LocalStorage.get(CATEGORIAS_KEY) || CATEGORIAS_PADRAO;
     if (!cats.some(c => c.nome.toLowerCase() === novaCat.nome.toLowerCase())) {
+        novaCat.icone = normalizarIconeLucide(novaCat.icone);
         cats.push(novaCat);
         LocalStorage.set(CATEGORIAS_KEY, cats);
         window.dispatchEvent(new CustomEvent('categories-updated'));

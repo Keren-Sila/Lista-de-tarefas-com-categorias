@@ -31,7 +31,7 @@ const rota404 = {
     pagina: async (container) => {
         container.innerHTML = `
             <div class="card glass text-center" style="max-width: 480px; margin: 4rem auto; padding: 2.5rem; text-align: center;">
-                <span style="font-size: 3rem;">🔍</span>
+                <span style="font-size: 3rem; display: block; margin-bottom: 0.5rem;"><i data-lucide="search-x" style="width:56px;height:56px;"></i></span>
                 <h2 style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">Página não encontrada 404</h2>
                 <p style="color: var(--text-secondary); margin: 1rem 0;">A rota solicitada não existe ou foi movida.</p>
                 <a href="#dashboard" class="btn-primary">Voltar ao Dashboard</a>
@@ -40,10 +40,18 @@ const rota404 = {
     }
 };
 
+export function renderLucideIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+}
+window.renderLucideIcons = renderLucideIcons;
+
 async function render() {
     const rotaAtual = mapaDeRotas[hash] || rota404;
     app.innerHTML = '';
     await rotaAtual.pagina(app);
+    renderLucideIcons();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

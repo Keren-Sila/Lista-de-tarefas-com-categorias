@@ -14,7 +14,7 @@ async function createCategoriasPage(app) {
     tarefas.forEach(t => {
         const catNome = t.categoria || 'Sem Categoria';
         if (!statsPorCategoria[catNome]) {
-            statsPorCategoria[catNome] = { total: 0, concluidas: 0, cor: '#64748B', icone: '🏷️' };
+            statsPorCategoria[catNome] = { total: 0, concluidas: 0, cor: '#64748B', icone: '<i data-lucide="tag"></i>' };
         }
         statsPorCategoria[catNome].total++;
         if (t.concluida) {
@@ -26,10 +26,10 @@ async function createCategoriasPage(app) {
         <section class="categorias-page-wrapper categorias-container page-enter">
             <div class="categorias-header">
                 <div>
-                    <h1>🏷️ Categorias & Produtividade</h1>
+                    <h1><i data-lucide="tag" style="width:26px;height:26px;vertical-align:middle;margin-right:6px;"></i> Categorias & Produtividade</h1>
                     <p class="subtitle">Acompanhe o progresso e organize tarefas por áreas da sua vida.</p>
                 </div>
-                <button id="btnNovaCategoria" class="btn-primary">➕ Nova Categoria</button>
+                <button id="btnNovaCategoria" class="btn-primary"><i data-lucide="plus" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Nova Categoria</button>
             </div>
 
             <div class="category-grid">
@@ -84,6 +84,8 @@ async function createCategoriasPage(app) {
             }
         });
     }
+
+    if (window.renderLucideIcons) window.renderLucideIcons();
 }
 
 export default {

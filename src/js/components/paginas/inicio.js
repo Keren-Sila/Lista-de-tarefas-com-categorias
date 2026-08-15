@@ -50,19 +50,19 @@ async function inicio(app) {
 
             <div class="feature-grid">
                 <article class="feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon"><i data-lucide="zap"></i></div>
                     <h3>Fluxo direto</h3>
                     <p>Crie tarefas, acompanhe prioridades e mantenha o foco sem perder tempo navegando por menus confusos.</p>
                 </article>
 
                 <article class="feature-card">
-                    <div class="feature-icon">📅</div>
+                    <div class="feature-icon"><i data-lucide="calendar"></i></div>
                     <h3>Agenda integrada</h3>
                     <p>Organize compromissos, reuniões e prazos em um só painel com visual claro e profissional.</p>
                 </article>
 
                 <article class="feature-card">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon"><i data-lucide="bar-chart-3"></i></div>
                     <h3>Visibilidade real</h3>
                     <p>Indicadores de progresso e categoria dão contexto ao seu dia e ajudam a agir com mais clareza.</p>
                 </article>

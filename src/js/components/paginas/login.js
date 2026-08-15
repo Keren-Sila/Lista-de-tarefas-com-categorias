@@ -14,7 +14,7 @@ async function login(app) {
                 <!-- Lado Esquerdo: Mensagem de valor + Ilustração -->
                 <div class="login-hero-side">
                     <div class="brand-badge">
-                        <span class="logo-icon">⚡</span>
+                        <span class="logo-icon"><i data-lucide="zap" style="width:20px;height:20px;"></i></span>
                         <span class="brand-name">TaskFlow</span>
                     </div>
 
@@ -24,13 +24,13 @@ async function login(app) {
 
                         <div class="feature-pills">
                             <div class="feature-pill">
-                                <span>📅</span> Organização por Dias & Turnos
+                                <span><i data-lucide="calendar" style="width:16px;height:16px;"></i></span> Organização por Dias & Turnos
                             </div>
                             <div class="feature-pill">
-                                <span>🏷️</span> Categorias & Prioridades
+                                <span><i data-lucide="tag" style="width:16px;height:16px;"></i></span> Categorias & Prioridades
                             </div>
                             <div class="feature-pill">
-                                <span>⚡</span> Integrado com Teams, Meet e Zoom
+                                <span><i data-lucide="video" style="width:16px;height:16px;"></i></span> Integrado com Teams, Meet e Zoom
                             </div>
                         </div>
                     </div>
@@ -49,7 +49,7 @@ async function login(app) {
                         </div>
 
                         <div class="form-header">
-                            <h2 id="formTitle">Bem-vindo de volta! 👋</h2>
+                            <h2 id="formTitle">Bem-vindo de volta! <i data-lucide="sparkles" style="width:22px;height:22px;vertical-align:middle;color:#ffffff;"></i></h2>
                             <p id="formSubtitle">Insira suas credenciais para acessar seu painel.</p>
                         </div>
 
@@ -123,26 +123,28 @@ async function login(app) {
         modoCadastro = false;
         tabLogin.classList.add('active');
         tabCadastro.classList.remove('active');
-        formTitle.textContent = 'Bem-vindo de volta! 👋';
+        formTitle.innerHTML = 'Bem-vindo de volta! <i data-lucide="sparkles" style="width:22px;height:22px;vertical-align:middle;color:#ffffff;"></i>';
         formSubtitle.textContent = 'Insira suas credenciais para acessar seu painel.';
         groupNome.style.display = 'none';
         inputNome.required = false;
         rowEsqueci.style.display = 'flex';
         btnAuthSubmit.textContent = 'Entrar na plataforma';
         authAlert.style.display = 'none';
+        if (window.renderLucideIcons) window.renderLucideIcons();
     });
 
     tabCadastro.addEventListener('click', () => {
         modoCadastro = true;
         tabCadastro.classList.add('active');
         tabLogin.classList.remove('active');
-        formTitle.textContent = 'Crie sua conta no TaskFlow 🚀';
+        formTitle.innerHTML = 'Crie sua conta no TaskFlow <i data-lucide="rocket" style="width:22px;height:22px;vertical-align:middle;color:#6366F1;"></i>';
         formSubtitle.textContent = 'Comece a organizar suas tarefas e rotina hoje mesmo.';
         groupNome.style.display = 'block';
         inputNome.required = true;
         rowEsqueci.style.display = 'none';
         btnAuthSubmit.textContent = 'Criar minha conta';
         authAlert.style.display = 'none';
+        if (window.renderLucideIcons) window.renderLucideIcons();
     });
 
     btnEsqueciSenha.addEventListener('click', () => {

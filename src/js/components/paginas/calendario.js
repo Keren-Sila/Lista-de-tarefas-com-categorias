@@ -53,7 +53,7 @@ async function calendario(app) {
                     <div class="badge-status mb-2">
                         <span class="badge-dot"></span> Visão Semanal Inteligente
                     </div>
-                    <h1>📅 Planner & Calendário</h1>
+                    <h1><i data-lucide="calendar" style="width:26px;height:26px;vertical-align:middle;margin-right:6px;"></i> Planner & Calendário</h1>
                     <p>Gerencie seus compromissos da semana em linhas horizontais com arrastar e soltar e criação rápida por dia.</p>
                 </div>
 
@@ -106,10 +106,12 @@ async function calendario(app) {
             }
 
             configurarEventosCalendario(app, viewContainer);
+            if (window.renderLucideIcons) window.renderLucideIcons();
         });
     });
 
     configurarEventosCalendario(app, viewContainer);
+    if (window.renderLucideIcons) window.renderLucideIcons();
 }
 
 /* Renderização da Visão Semanal Horizontal */
@@ -143,7 +145,7 @@ function linhaDiaHorizontal(dia, tarefas, infoData) {
                 ${tarefasDoDia.length > 0 ? tarefasDoDia.map(cardCalendarioHorizontal).join("") : `
                     <div class="empty-day-drop-horizontal" data-day="${dia}">
                         <div class="empty-drop-content">
-                            <span class="drop-icon">📥</span>
+                            <span class="drop-icon"><i data-lucide="inbox" style="width:24px;height:24px;"></i></span>
                             <span>Nenhuma atividade agendada. Arraste ou solte uma tarefa aqui para este dia.</span>
                         </div>
                     </div>
@@ -163,7 +165,7 @@ function cardCalendarioHorizontal(tarefa) {
 
             <div class="cal-task-main">
                 <div class="cal-task-header-row">
-                    <span class="calendar-time">⏰ ${tarefa.horario || "09:00"}</span>
+                    <span class="calendar-time"><i data-lucide="clock" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i> ${tarefa.horario || "09:00"}</span>
                     <span class="priority-pill priority-pill-${tarefa.prioridade} mini">${tarefa.prioridade}</span>
                 </div>
                 <strong class="cal-task-title ${tarefa.concluida ? 'line-through' : ''}">${tarefa.titulo}</strong>
@@ -171,12 +173,12 @@ function cardCalendarioHorizontal(tarefa) {
 
             <div class="cal-task-tags">
                 <span class="tag-category">#${tarefa.categoria}</span>
-                ${tarefa.provedorReuniao ? `<span class="badge-provider mini provider-${tarefa.provedorReuniao.toLowerCase()}">📹 ${tarefa.provedorReuniao}</span>` : ''}
+                ${tarefa.provedorReuniao ? `<span class="badge-provider mini provider-${tarefa.provedorReuniao.toLowerCase()}"><i data-lucide="video" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i> ${tarefa.provedorReuniao}</span>` : ''}
             </div>
 
             <div class="cal-task-actions">
-                <button class="btn-icon btn-edit-cal-task" data-id="${tarefa.id}" data-tooltip="Editar detalhes">✏️</button>
-                <button class="btn-icon btn-delete-cal-task" data-id="${tarefa.id}" data-tooltip="Excluir tarefa">🗑️</button>
+                <button class="btn-icon btn-edit-cal-task" data-id="${tarefa.id}" data-tooltip="Editar detalhes"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                <button class="btn-icon btn-delete-cal-task" data-id="${tarefa.id}" data-tooltip="Excluir tarefa"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
             </div>
         </div>
     `;
@@ -199,58 +201,40 @@ function renderVisaoDiaria(tarefas) {
     const noite = ordenarPorHorario(tarefasHoje.filter(t => t.turno === 'noite' || (t.horario && parseInt(t.horario.split(':')[0], 10) >= 18)));
 
     return `
-        <div class="daily-view-container card glass">
+        <div class="calendar-daily-view card glass">
             <div class="daily-view-header">
-                <div>
-                    <span class="section-kicker">Agenda do Dia</span>
-                    <h2>☀️ ${dataLabel.charAt(0).toUpperCase() + dataLabel.slice(1)}</h2>
-                </div>
-                <span class="daily-total-badge">${tarefasHoje.length} tarefas pendentes</span>
+                <h2><i data-lucide="sun" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Visão Diária (${dataLabel})</h2>
+                <span class="badge-count">${tarefasHoje.length} pendentes</span>
             </div>
 
             <div class="daily-shifts-grid">
-                <!-- Turno 1: Manhã -->
-                <div class="daily-shift-box shift-manha">
-                    <div class="shift-box-header">
-                        <h3>🌅 Manhã</h3>
-                        <span class="shift-time-tag">05h - 12h</span>
+                <div class="daily-shift-col">
+                    <div class="shift-col-header">
+                        <h3><i data-lucide="sun" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Manhã</h3>
+                        <small>05:00 - 12:00</small>
                     </div>
-                    <div class="daily-tasks-list">
-                        ${manha.length > 0 ? manha.map(t => cardVisaoDiaria(t)).join('') : `
-                            <div class="empty-shift-box">
-                                <span>🌅 Sem tarefas para a manhã</span>
-                            </div>
-                        `}
+                    <div class="shift-col-list">
+                        ${manha.length > 0 ? manha.map(cardVisaoDiaria).join('') : '<p class="empty-shift-text">Sem tarefas na manhã</p>'}
                     </div>
                 </div>
 
-                <!-- Turno 2: Tarde -->
-                <div class="daily-shift-box shift-tarde">
-                    <div class="shift-box-header">
-                        <h3>☀️ Tarde</h3>
-                        <span class="shift-time-tag">12h - 18h</span>
+                <div class="daily-shift-col">
+                    <div class="shift-col-header">
+                        <h3><i data-lucide="sun-medium" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Tarde</h3>
+                        <small>12:00 - 18:00</small>
                     </div>
-                    <div class="daily-tasks-list">
-                        ${tarde.length > 0 ? tarde.map(t => cardVisaoDiaria(t)).join('') : `
-                            <div class="empty-shift-box">
-                                <span>☀️ Sem tarefas para a tarde</span>
-                            </div>
-                        `}
+                    <div class="shift-col-list">
+                        ${tarde.length > 0 ? tarde.map(cardVisaoDiaria).join('') : '<p class="empty-shift-text">Sem tarefas na tarde</p>'}
                     </div>
                 </div>
 
-                <!-- Turno 3: Noite -->
-                <div class="daily-shift-box shift-noite">
-                    <div class="shift-box-header">
-                        <h3>🌙 Noite</h3>
-                        <span class="shift-time-tag">18h - 23h59</span>
+                <div class="daily-shift-col">
+                    <div class="shift-col-header">
+                        <h3><i data-lucide="moon" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Noite</h3>
+                        <small>18:00 - 23:59</small>
                     </div>
-                    <div class="daily-tasks-list">
-                        ${noite.length > 0 ? noite.map(t => cardVisaoDiaria(t)).join('') : `
-                            <div class="empty-shift-box">
-                                <span>🌙 Sem tarefas para a noite</span>
-                            </div>
-                        `}
+                    <div class="shift-col-list">
+                        ${noite.length > 0 ? noite.map(cardVisaoDiaria).join('') : '<p class="empty-shift-text">Sem tarefas na noite</p>'}
                     </div>
                 </div>
             </div>
@@ -262,13 +246,13 @@ function cardVisaoDiaria(tarefa) {
     return `
         <div class="daily-task-card priority-border-${tarefa.prioridade}">
             <div class="daily-task-top">
-                <span class="calendar-time">⏰ ${tarefa.horario || "09:00"}</span>
+                <span class="calendar-time"><i data-lucide="clock" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i> ${tarefa.horario || "09:00"}</span>
                 <span class="priority-pill priority-pill-${tarefa.prioridade} mini">${tarefa.prioridade}</span>
             </div>
             <strong class="daily-task-title">${tarefa.titulo}</strong>
             <div class="daily-task-footer">
                 <span class="tag-category">#${tarefa.categoria}</span>
-                ${tarefa.provedorReuniao ? `<span class="badge-provider mini provider-${tarefa.provedorReuniao.toLowerCase()}">📹 ${tarefa.provedorReuniao}</span>` : ''}
+                ${tarefa.provedorReuniao ? `<span class="badge-provider mini provider-${tarefa.provedorReuniao.toLowerCase()}"><i data-lucide="video" style="width:12px;height:12px;vertical-align:middle;margin-right:2px;"></i> ${tarefa.provedorReuniao}</span>` : ''}
             </div>
         </div>
     `;

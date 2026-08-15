@@ -19,7 +19,7 @@ export function abrirModalTarefa(tarefaParaEditar = null, onSaveCallback = null)
     backdrop.innerHTML = `
         <div class="modal-card glass">
             <div class="modal-header">
-                <h2>${eEdicao ? '✏️ Editar Tarefa' : '➕ Nova Tarefa'}</h2>
+                <h2>${eEdicao ? '<i data-lucide="pencil" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Editar Tarefa' : '<i data-lucide="plus" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Nova Tarefa'}</h2>
                 <button class="modal-close" id="btnFecharModal">&times;</button>
             </div>
             <form id="formTarefaModal" class="modal-body">
@@ -88,7 +88,7 @@ export function abrirModalTarefa(tarefaParaEditar = null, onSaveCallback = null)
                 <div class="form-checkbox">
                     <label>
                         <input type="checkbox" id="modalNotificacao" ${eEdicao && tarefaParaEditar.sincronizar ? 'checked' : 'checked'}>
-                        <span>🔔 Agendar lembrete no navegador</span>
+                        <span><i data-lucide="bell" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Agendar lembrete no navegador</span>
                     </label>
                 </div>
 
@@ -101,6 +101,7 @@ export function abrirModalTarefa(tarefaParaEditar = null, onSaveCallback = null)
     `;
 
     document.body.appendChild(backdrop);
+    if (window.renderLucideIcons) window.renderLucideIcons();
 
     const fechar = () => backdrop.remove();
     backdrop.querySelector('#btnFecharModal').addEventListener('click', fechar);

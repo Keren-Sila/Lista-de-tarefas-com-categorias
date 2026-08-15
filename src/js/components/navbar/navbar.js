@@ -29,7 +29,7 @@ export default function navbar(item_menu) {
     navbarContainer.innerHTML = `
         <nav class="navbar glass">
             <a href="#dashboard" class="navbar-brand" data-tooltip="Painel Principal TaskFlow">
-                ⚡ Task<span>Flow</span>
+                <i data-lucide="zap" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;"></i> Task<span>Flow</span>
             </a>
 
             <ul class="navbar-menu">
@@ -38,7 +38,7 @@ export default function navbar(item_menu) {
 
             <div class="navbar-right-actions">
                 <button id="btnNavNovaTarefa" class="btn-primary btn-sm btn-nav-new" data-tooltip="Criar nova tarefa rapidamente">
-                    ➕ Nova Tarefa
+                    <i data-lucide="plus" style="width:16px;height:16px;vertical-align:middle;"></i> Nova Tarefa
                 </button>
 
                 <a href="#perfil" class="navbar-user-badge" id="navbarUserBadge" data-tooltip="Ver e editar meu perfil">
@@ -59,19 +59,19 @@ export default function navbar(item_menu) {
     if (mobileTabsContainer) {
         mobileTabsContainer.innerHTML = `
             <a href="#dashboard" class="mobile-tab" data-tooltip="Home">
-                <span class="icon">🏠</span>
+                <span class="icon"><i data-lucide="home"></i></span>
                 <span>Home</span>
             </a>
             <a href="#calendario" class="mobile-tab" data-tooltip="Calendário">
-                <span class="icon">📅</span>
+                <span class="icon"><i data-lucide="calendar"></i></span>
                 <span>Calendário</span>
             </a>
             <a href="#categorias" class="mobile-tab" data-tooltip="Categorias">
-                <span class="icon">🏷️</span>
+                <span class="icon"><i data-lucide="tag"></i></span>
                 <span>Categorias</span>
             </a>
             <a href="#perfil" class="mobile-tab" data-tooltip="Meu Perfil">
-                <span class="icon">👤</span>
+                <span class="icon"><i data-lucide="user"></i></span>
                 <span>Perfil</span>
             </a>
         `;
@@ -83,12 +83,14 @@ export default function navbar(item_menu) {
         fab = document.createElement('button');
         fab.id = 'btnMobileFAB';
         fab.className = 'mobile-fab-btn';
-        fab.innerHTML = '➕';
+        fab.innerHTML = '<i data-lucide="plus"></i>';
         fab.setAttribute('data-tooltip', 'Nova Tarefa');
         fab.title = 'Criar Nova Tarefa';
         fab.addEventListener('click', () => abrirModalTarefa());
         document.body.appendChild(fab);
     }
+
+    if (window.renderLucideIcons) window.renderLucideIcons();
 
     // Função para atualizar o link ativo
     const updateActiveLink = () => {

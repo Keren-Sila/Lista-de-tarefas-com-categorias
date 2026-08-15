@@ -17,24 +17,24 @@ async function perfil(app) {
                 <div class="avatar-wrapper">
                     <img id="imgAvatar" src="${avatarSrc}" alt="${usuario.nome}" class="profile-avatar">
                     <label for="inputUploadAvatar" class="avatar-edit-badge" title="Alterar Foto">
-                        📷
+                        <i data-lucide="camera" style="width:16px;height:16px;"></i>
                     </label>
                     <input type="file" id="inputUploadAvatar" accept="image/*" style="display:none;">
                 </div>
                 <div class="user-identity">
                     <h1>${usuario.nome}</h1>
                     <p class="user-email">${usuario.email}</p>
-                    <span class="user-role-badge">⚡ ${usuario.cargo || 'Membro TaskFlow'}</span>
+                    <span class="user-role-badge"><i data-lucide="zap" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> ${usuario.cargo || 'Membro TaskFlow'}</span>
                 </div>
                 <button id="btnLogoutPerfil" class="btn-secondary btn-logout" title="Sair da conta">
-                    🚪 Sair
+                    <i data-lucide="log-out" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Sair
                 </button>
             </div>
 
             <div class="perfil-grid">
                 <!-- Coluna 1: Dados Pessoais & Configurações da Conta -->
                 <div class="card perfil-card">
-                    <h3>👤 Dados Pessoais</h3>
+                    <h3><i data-lucide="user" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Dados Pessoais</h3>
                     <form id="formPerfil" class="perfil-form">
                         <div class="form-group">
                             <label for="perfilNome">Nome Completo</label>
@@ -64,7 +64,7 @@ async function perfil(app) {
 
                 <!-- Coluna 2: Estatísticas de Conta & Preferências PWA -->
                 <div class="card perfil-card">
-                    <h3>📊 Suas Estatísticas no TaskFlow</h3>
+                    <h3><i data-lucide="bar-chart-2" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Suas Estatísticas no TaskFlow</h3>
                     
                     <div class="stats-mini-grid">
                         <div class="mini-stat">
@@ -86,7 +86,7 @@ async function perfil(app) {
                     </div>
 
                     <div class="pwa-settings">
-                        <h4>📱 Preferências & PWA</h4>
+                        <h4><i data-lucide="smartphone" style="width:18px;height:18px;vertical-align:middle;margin-right:6px;"></i> Preferências & PWA</h4>
                         <div class="setting-item">
                             <div>
                                 <strong>Modo Offline First</strong>

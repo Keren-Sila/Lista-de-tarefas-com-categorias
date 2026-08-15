@@ -12,7 +12,7 @@ async function tarefas(app) {
         <section class="tarefas-page tarefas-page-wrapper page-enter">
             <div class="tarefas-header">
                 <div>
-                    <h1>📋 Lista de Tarefas</h1>
+                    <h1><i data-lucide="check-square" style="width:26px;height:26px;vertical-align:middle;margin-right:6px;"></i> Lista de Tarefas</h1>
                     <p class="subtitle">Organize, filtre e gerencie suas atividades em tempo real.</p>
                 </div>
             </div>
@@ -20,7 +20,7 @@ async function tarefas(app) {
             <!-- Busca e Filtros Clean -->
             <div class="search-and-filters card glass">
                 <div class="search-box">
-                    <span class="search-icon">🔍</span>
+                    <span class="search-icon"><i data-lucide="search" style="width:16px;height:16px;"></i></span>
                     <input id="buscarTarefa" type="text" placeholder="Buscar tarefas por título ou descrição..." class="input-clean" data-tooltip="Digite para filtrar instantaneamente">
                 </div>
 
@@ -28,8 +28,8 @@ async function tarefas(app) {
                     <button class="filter-pill active" data-filter="todas" data-tooltip="Exibir todas as tarefas">Todas (${todasAsTarefas.length})</button>
                     <button class="filter-pill" data-filter="hoje" data-tooltip="Tarefas agendadas para hoje">Hoje</button>
                     <button class="filter-pill" data-filter="semana" data-tooltip="Tarefas desta semana">Esta Semana</button>
-                    <button class="filter-pill" data-filter="urgente" data-tooltip="Filtrar por prioridade urgente">🔴 Urgentes</button>
-                    <button class="filter-pill" data-filter="alta" data-tooltip="Filtrar por prioridade alta">🟠 Altas</button>
+                    <button class="filter-pill" data-filter="urgente" data-tooltip="Filtrar por prioridade urgente"><i data-lucide="alert-circle" style="width:14px;height:14px;color:#ef4444;vertical-align:middle;margin-right:4px;"></i> Urgentes</button>
+                    <button class="filter-pill" data-filter="alta" data-tooltip="Filtrar por prioridade alta"><i data-lucide="alert-triangle" style="width:14px;height:14px;color:#f97316;vertical-align:middle;margin-right:4px;"></i> Altas</button>
                     ${categorias.map(c => `<button class="filter-pill" data-filter="cat_${c.nome}" data-tooltip="Filtrar por ${c.nome}">${c.icone || '🏷️'} ${c.nome}</button>`).join('')}
                 </div>
             </div>
@@ -46,16 +46,17 @@ async function tarefas(app) {
         if (tarefasParaRenderizar.length === 0) {
             listaTarefasContainer.innerHTML = `
                 <div class="empty-state-card card">
-                    <span class="empty-icon">📂</span>
+                    <span class="empty-icon"><i data-lucide="folder-open" style="width:40px;height:40px;"></i></span>
                     <h3>Nenhuma tarefa encontrada</h3>
                     <p>Crie uma nova tarefa ou altere os filtros de busca.</p>
-                    <button class="btn-primary btn-sm" id="btnEmptyNova">➕ Criar Tarefa</button>
+                    <button class="btn-primary btn-sm" id="btnEmptyNova"><i data-lucide="plus" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Criar Tarefa</button>
                 </div>
             `;
             const emptyBtn = listaTarefasContainer.querySelector('#btnEmptyNova');
             if (emptyBtn) {
                 emptyBtn.addEventListener('click', () => abrirModalTarefa(null, () => renderizarLista(carregarTarefas())));
             }
+            if (window.renderLucideIcons) window.renderLucideIcons();
             return;
         }
 
@@ -66,6 +67,7 @@ async function tarefas(app) {
             listaTarefasContainer.appendChild(cardElement);
             adicionarListenersAoCard(cardElement, tarefa);
         });
+        if (window.renderLucideIcons) window.renderLucideIcons();
     }
 
     function adicionarListenersAoCard(card, tarefa) {
@@ -244,8 +246,8 @@ function cardTarefaHTML(t) {
                 <h3 class="task-title">${t.titulo}</h3>
 
                 <div class="task-card-menu-actions">
-                    <button class="btn-icon btn-edit-task" data-tooltip="Editar detalhes da tarefa">✏️</button>
-                    <button class="btn-icon btn-delete-task" data-tooltip="Excluir esta tarefa">🗑️</button>
+                    <button class="btn-icon btn-edit-task" data-tooltip="Editar detalhes da tarefa"><i data-lucide="pencil" style="width:16px;height:16px;"></i></button>
+                    <button class="btn-icon btn-delete-task" data-tooltip="Excluir esta tarefa"><i data-lucide="trash-2" style="width:16px;height:16px;"></i></button>
                 </div>
             </div>
 
@@ -254,24 +256,24 @@ function cardTarefaHTML(t) {
             <div class="task-tags-row">
                 <span class="tag-category">#${t.categoria}</span>
                 <span class="priority-pill priority-pill-${t.prioridade}">${prioridadeLabels[t.prioridade] || t.prioridade}</span>
-                ${t.provedorReuniao ? `<span class="badge-provider provider-${t.provedorReuniao.toLowerCase()}">📹 ${t.provedorReuniao}</span>` : ''}
+                ${t.provedorReuniao ? `<span class="badge-provider provider-${t.provedorReuniao.toLowerCase()}"><i data-lucide="video" style="width:13px;height:13px;vertical-align:middle;margin-right:3px;"></i> ${t.provedorReuniao}</span>` : ''}
             </div>
 
             <div class="task-meta-footer">
                 <span class="task-time-badge">
-                    ⏰ ${t.data || 'Sem data'} ${t.horario ? `• ${t.horario}` : ''}
+                    <i data-lucide="clock" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> ${t.data || 'Sem data'} ${t.horario ? `• ${t.horario}` : ''}
                 </span>
 
                 <div class="task-action-dropdowns">
                     <div class="calendar-export-wrapper">
-                        <button class="btn-secondary btn-sm btn-calendar" data-tooltip="Exportar para seu aplicativo de agenda">📅 Calendário ▾</button>
+                        <button class="btn-secondary btn-sm btn-calendar" data-tooltip="Exportar para seu aplicativo de agenda"><i data-lucide="calendar" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Calendário ▾</button>
                         <div class="calendar-menu">
                             <button data-provider="google">Google Calendar</button>
                             <button data-provider="outlook">Outlook</button>
                             <button data-provider="ics">Apple / Teams (.ics)</button>
                         </div>
                     </div>
-                    <button class="btn-secondary btn-sm btn-share" data-tooltip="Compartilhar tarefa">📤 Share</button>
+                    <button class="btn-secondary btn-sm btn-share" data-tooltip="Compartilhar tarefa"><i data-lucide="share-2" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Compartilhar</button>
                 </div>
             </div>
         </article>

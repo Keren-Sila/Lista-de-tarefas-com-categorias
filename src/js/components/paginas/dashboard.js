@@ -53,7 +53,7 @@ async function dashboard(app) {
                     <div class="badge-status mb-2">
                         <span class="badge-dot"></span> Modo Produtivo Ativo
                     </div>
-                    <h1>${saudacao()}, ${usuario.nome.split(' ')[0]} 👋</h1>
+                    <h1>${saudacao()}, ${usuario.nome.split(' ')[0]} <i data-lucide="sparkles" style="width:26px;height:26px;vertical-align:middle;margin-left:4px;color:#ffffff;"></i></h1>
                     <p>${dataExtensa.charAt(0).toUpperCase() + dataExtensa.slice(1)}<br><strong>Você concluiu ${progressoSemana}% das tarefas desta semana.</strong></p>
                 </div>
 
@@ -69,7 +69,7 @@ async function dashboard(app) {
 
                 <div class="quick-actions-bar">
                     <button id="btnSincronizarCalendarios" class="btn-secondary" data-tooltip="Exportar eventos para seu aplicativo de calendário">
-                        🔄 Sincronizar Calendários
+                        <i data-lucide="refresh-cw" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Sincronizar Calendários
                     </button>
                 </div>
             </div>
@@ -98,14 +98,14 @@ async function dashboard(app) {
                 <!-- Coluna 1: Agenda do Dia (Manhã / Tarde / Noite) -->
                 <div class="dashboard-column agenda-column card">
                     <div class="column-header">
-                        <h2>📅 Agenda do Dia</h2>
+                        <h2><i data-lucide="calendar" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Agenda do Dia</h2>
                         <span class="badge-count">${tarefasHoje.length} atividades</span>
                     </div>
 
                     <div class="shifts-container">
                         <div class="shift-group">
                             <div class="shift-title">
-                                <span>🌅 Manhã</span>
+                                <span><i data-lucide="sun" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Manhã</span>
                                 <small>(05:00 - 12:00)</small>
                             </div>
                             <div class="shift-tasks">
@@ -115,7 +115,7 @@ async function dashboard(app) {
 
                         <div class="shift-group">
                             <div class="shift-title">
-                                <span>☀️ Tarde</span>
+                                <span><i data-lucide="sun-medium" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Tarde</span>
                                 <small>(12:00 - 18:00)</small>
                             </div>
                             <div class="shift-tasks">
@@ -125,7 +125,7 @@ async function dashboard(app) {
 
                         <div class="shift-group">
                             <div class="shift-title">
-                                <span>🌙 Noite</span>
+                                <span><i data-lucide="moon" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Noite</span>
                                 <small>(18:00 - 23:59)</small>
                             </div>
                             <div class="shift-tasks">
@@ -138,7 +138,7 @@ async function dashboard(app) {
                 <!-- Coluna 2: Reuniões & Integrações (Teams / Meet / Zoom) -->
                 <div class="dashboard-column meetings-column card">
                     <div class="column-header">
-                        <h2>💬 Reuniões & Integrações</h2>
+                        <h2><i data-lucide="video" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Reuniões & Integrações</h2>
                         <span class="badge-count">${reunioes.length} agendadas</span>
                     </div>
 
@@ -149,15 +149,15 @@ async function dashboard(app) {
                                     <span class="badge-provider provider-${(r.provedorReuniao || 'Teams').toLowerCase()}">
                                         ${r.provedorReuniao || 'Teams'}
                                     </span>
-                                    <span class="meeting-time">⏰ ${r.horario || '14:00'}</span>
+                                    <span class="meeting-time"><i data-lucide="clock" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> ${r.horario || '14:00'}</span>
                                 </div>
                                 <h4 class="meeting-title">${r.titulo}</h4>
                                 <p class="meeting-desc">${r.descricao || 'Sem descrição'}</p>
 
                                 <div class="meeting-footer">
-                                    <span class="countdown-timer" data-horario="${r.data || hojeISO}T${r.horario || '09:00'}">⏳ Calculando...</span>
+                                    <span class="countdown-timer" data-horario="${r.data || hojeISO}T${r.horario || '09:00'}"><i data-lucide="timer" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Calculando...</span>
                                     <a href="${r.linkReuniao || 'https://teams.microsoft.com'}" target="_blank" rel="noopener" class="btn-join-call">
-                                        📞 Entrar na chamada
+                                        <i data-lucide="phone-call" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Entrar na chamada
                                     </a>
                                 </div>
                             </div>
@@ -168,7 +168,7 @@ async function dashboard(app) {
                 <!-- Coluna 3: Categorias & Estatísticas -->
                 <div class="dashboard-column categories-column card">
                     <div class="column-header">
-                        <h2>📊 Categorias & Progresso</h2>
+                        <h2><i data-lucide="bar-chart-3" style="width:20px;height:20px;vertical-align:middle;margin-right:6px;"></i> Categorias & Progresso</h2>
                         <a href="#categorias" class="link-see-all">Ver todas →</a>
                     </div>
 
@@ -230,10 +230,10 @@ async function dashboard(app) {
 
 function renderMiniTask(t) {
     const prioridadeLabels = {
-        urgente: '🔴 Urgente',
-        alta: '🟠 Alta',
-        media: '🟡 Média',
-        baixa: '⚪ Baixa'
+        urgente: '<i data-lucide="alert-circle" style="width:12px;height:12px;color:#ef4444;vertical-align:middle;margin-right:3px;"></i> Urgente',
+        alta: '<i data-lucide="alert-triangle" style="width:12px;height:12px;color:#f97316;vertical-align:middle;margin-right:3px;"></i> Alta',
+        media: '<i data-lucide="minus" style="width:12px;height:12px;color:#eab308;vertical-align:middle;margin-right:3px;"></i> Média',
+        baixa: '<i data-lucide="arrow-down" style="width:12px;height:12px;color:#10b981;vertical-align:middle;margin-right:3px;"></i> Baixa'
     };
 
     return `
@@ -253,9 +253,12 @@ export default {
     pagina: dashboard
 };
 function atualizarContadores(app) {
-    const atualizar = () => app.querySelectorAll('[data-horario]').forEach(item => {
-        const quando = new Date(item.dataset.horario).getTime(); const minutos = Math.max(0, Math.ceil((quando - Date.now()) / 60000));
-        item.textContent = minutos ? `⏳ Em ${minutos} min` : '⏳ Horário da reunião';
-    });
+    const atualizar = () => {
+        app.querySelectorAll('[data-horario]').forEach(item => {
+            const quando = new Date(item.dataset.horario).getTime(); const minutos = Math.max(0, Math.ceil((quando - Date.now()) / 60000));
+            item.innerHTML = minutos ? `<i data-lucide="timer" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Em ${minutos} min` : '<i data-lucide="timer" style="width:14px;height:14px;vertical-align:middle;margin-right:3px;"></i> Horário da reunião';
+        });
+        if (window.renderLucideIcons) window.renderLucideIcons();
+    };
     atualizar(); setInterval(atualizar, 60000);
 }
